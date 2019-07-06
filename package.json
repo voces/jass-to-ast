@@ -43,7 +43,6 @@
   "type": "module",
   "files": [
     "/src",
-    "index.js",
-    "test/util.js"
+    "index.js"
   ]
 }
