@@ -38,3 +38,29 @@ endfunction
     }
   ]
 ```
+
+## CLI
+
+```bash
+> jass-to-ast example.j
+Program [
+  Globals {
+    globals: Statements [
+      Variable { type: 'boolean', name: 'flipped', value: false }
+    ]
+  },
+  EmptyLine {},
+  JASSFunction {
+    name: 'flip',
+    statements: Statements [
+      Variable {
+        type: 'boolean',
+        name: 'previousState',
+        value: [String (Name): 'flipped']
+      },
+      JASSSet { name: 'flipped', value: true },
+      Return { data: [ [String (Name): 'previousState'] ] }
+    ]
+  }
+]
+```

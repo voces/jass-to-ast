@@ -1,6 +1,6 @@
 {
   "name": "jass-to-ast",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Converts WC3 JASS to an abstract syntax tree",
   "main": "src/parser.js",
   "module": "src/parser.js",
@@ -44,5 +44,8 @@
   "files": [
     "/src",
     "index.js"
-  ]
+  ],
+  "bin": {
+    "jass-to-ast": "index.js"
+  }
 }
