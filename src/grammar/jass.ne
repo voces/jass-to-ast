@@ -2,7 +2,7 @@
 
 import { map as classes, List } from "./types.js";
 
-const fin = false;
+let fin = false;
 const o = fn => ( result, ...args ) => fin ? fn( result, ...args ) : result;
 const nil = () => null;
 const keywords = [
@@ -175,9 +175,9 @@ call                       -> "call" __ name _ "(" _ (args _):? ")"             
 
 args                       -> expr (_ "," _ expr):*                                                         {%e().flat().filter((_, i) => i%4 === 0).kind('args')%}
 
-ifthenelse                 -> "if" _ expr _ "then" newline statements:? else_clauses:? _ "endif"            {%e().flat().reorder(2, 5, 7, 8).pick(1, 1, 1, e().fn(v => v && v.data)).kind('ifthenelse')%}
+ifthenelse                 -> "if" _ expr _ "then" newline statements:? else_clauses:? _ "endif"            {%e().flat().reorder(2, 5, 6, 7).pick(1, 1, 1, e().fn(v => v && v.data)).kind('ifthenelse')%}
 
-else_clauses               -> (_ else_clause):+                                                             {%e().map(v => v[1]).flat().kind('else_clauses')%}
+else_clauses               -> (_ else_clause):+                                                             {%e().first().map(v => v[1]).flat().kind('else_clauses')%}
 
 else_clause                -> "else" newline statements:?                                                   {%e().flat().reorder(1, 2).kind('else')%}
                             | "elseif" _ expr _ "then" newline statements:?                                 {%e().flat().reorder(2, 5, 6).kind('elseif')%}

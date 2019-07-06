@@ -279,6 +279,176 @@ describe( "parser", () => {
 
 	} );
 
+	describe( "if-then-else", () => {
+
+		it( "empty", () => expectParse( `
+			function foo takes nothing returns nothing
+				if true then
+				endif
+			endfunction
+		`, `
+			Program [
+				JASSFunction {
+					name: String "foo"
+					statements: Statements [
+						IfThenElse {
+							condition: Boolean true
+						}
+					]
+				}
+			]
+		` ) );
+
+		it( "simple", () => expectParse( `
+			function foo takes nothing returns nothing
+				if true then
+					set bar = buz
+				endif
+			endfunction
+		`, `
+			Program [
+				JASSFunction {
+					name: String "foo"
+					statements: Statements [
+						IfThenElse {
+							condition: Boolean true
+							then: Statements [
+								JASSSet {
+									name: String "bar"
+									value: Name "buz"
+								}
+							]
+						}
+					]
+				}
+			]
+		` ) );
+
+		it( "else", () => expectParse( `
+			function foo takes nothing returns nothing
+				if true then
+					set bar = buz
+				else
+					set bar = qux
+				endif
+			endfunction
+		`, `
+			Program [
+				JASSFunction {
+					name: String "foo"
+					statements: Statements [
+						IfThenElse {
+							condition: Boolean true
+							then: Statements [
+								JASSSet {
+									name: String "bar"
+									value: Name "buz"
+								}
+							]
+							elses: Array [
+								Else {
+									statements: Statements [
+										JASSSet {
+											name: String "bar"
+											value: Name "qux"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		` ) );
+
+		it( "elseif", () => expectParse( `
+			function foo takes nothing returns nothing
+				if true then
+					set bar = buz
+				elseif false then
+					set bar = qux
+				endif
+			endfunction
+		`, `
+			Program [
+				JASSFunction {
+					name: String "foo"
+					statements: Statements [
+						IfThenElse {
+							condition: Boolean true
+							then: Statements [
+								JASSSet {
+									name: String "bar"
+									value: Name "buz"
+								}
+							]
+							elses: Array [
+								ElseIf {
+									condition: Boolean false
+									statements: Statements [
+										JASSSet {
+											name: String "bar"
+											value: Name "qux"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		` ) );
+
+		it( "elseif with else", () => expectParse( `
+			function foo takes nothing returns nothing
+				if true then
+					set bar = buz
+				elseif false then
+					set bar = qux
+				else
+					set bar = thud
+				endif
+			endfunction
+		`, `
+			Program [
+				JASSFunction {
+					name: String "foo"
+					statements: Statements [
+						IfThenElse {
+							condition: Boolean true
+							then: Statements [
+								JASSSet {
+									name: String "bar"
+									value: Name "buz"
+								}
+							]
+							elses: Array [
+								ElseIf {
+									condition: Boolean false
+									statements: Statements [
+										JASSSet {
+											name: String "bar"
+											value: Name "qux"
+										}
+									]
+								}
+								Else {
+									statements: Statements [
+										JASSSet {
+											name: String "bar"
+											value: Name "thud"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		` ) );
+
+	} );
+
 	describe( "edge cases", () => {
 
 		it( "multiple left expressions", () => expectParse( `
