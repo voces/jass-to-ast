@@ -7,7 +7,7 @@ class Node {
 
 	constructor( data ) {
 
-		Object.defineProperty( this, "data", { value: data } );
+		Object.defineProperty( this, "data", { value: data, configurable: true } );
 		if ( this.constructor.map ) {
 
 			const map = this.constructor.map;
@@ -23,7 +23,16 @@ class Node {
 
 class EmptyLine extends Node {}
 
-class SingleProp extends Node {}
+class SingleProp extends Node {
+
+	constructor( ...args ) {
+
+		super( ...args );
+		Object.defineProperty( this, "data", { enumerable: true } );
+
+	}
+
+}
 class FuncRef extends SingleProp {}
 class ExitWhen extends SingleProp {}
 class Return extends SingleProp {}

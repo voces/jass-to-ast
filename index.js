@@ -1,8 +1,8 @@
 #!/usr/bin/env node --experimental-modules --no-warnings
 
 import fs from "fs";
+import { inspect } from "util";
 import parse from "./src/parser.js";
-import { inspect } from "./src/util.js";
 
 const filePath = process.argv[ 2 ];
 
@@ -15,6 +15,6 @@ fs.readFile( filePath, "utf-8", ( err, res ) => {
 
 	}
 
-	console.log( inspect( parse( res ) ) );
+	console.log( inspect( parse( res ), false, Infinity, true ) );
 
 } );
