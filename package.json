@@ -1,0 +1,49 @@
+{
+  "name": "jass-to-ast",
+  "version": "1.0.0",
+  "description": "Converts WC3 JASS to an abstract syntax tree",
+  "main": "src/parser.js",
+  "module": "src/parser.js",
+  "scripts": {
+    "test": "vt **/*.test.js",
+    "build": "node --experimental-modules --no-warnings src/grammar/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voces/jass-to-ast.git"
+  },
+  "keywords": [
+    "wc3",
+    "jass",
+    "webcraft",
+    "warcraft",
+    "ast"
+  ],
+  "author": "verit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/voces/jass-to-ast/issues"
+  },
+  "homepage": "https://github.com/voces/jass-to-ast#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "chai": "^4.2.0",
+    "diff": "^4.0.1",
+    "eslint": "^5.16.0",
+    "eslint-config-mdcs": "^4.2.3",
+    "eslint-config-verit": "^1.0.2",
+    "eslint-plugin-html": "^5.0.3",
+    "eslint-plugin-mocha": "^5.2.1",
+    "verit-test": "^3.1.0"
+  },
+  "dependencies": {
+    "@voces/nearley": "^2.16.0",
+    "moo": "^0.5.0"
+  },
+  "type": "module",
+  "files": [
+    "/src",
+    "index.js",
+    "test/util.js"
+  ]
+}
