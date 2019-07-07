@@ -110,9 +110,12 @@ program                    -> program_blocks:+ _ fin                            
 fin                        -> "fin"                                                                         {%() => (fin = true, null)%}
 
 program_blocks             -> emptyline
-                            | _ globals_block
+                            | _program_block                                                                {%e().flat().reorder(1)%}
+
+_program_block             -> _ globals_block
                             | _ native_func
                             | _ function_block
+                            | _ type_declr
 
 globals_block              -> "globals" newline globals_block_statements:? _ "endglobals" newline           {%e().flat().reorder(1, 2, 5).kind('globals')%}
 
@@ -137,6 +140,8 @@ func_return                -> type
                  
 function_block             -> "function" _ func_declr newline statements:? _ "endfunction" newline          {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment')%}
                             | "constant function" _ func_declr newline statements:? _ "endfunction" newline {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({constant: true})%}
+
+type_declr                 -> "type" __ name __ "extends" __ name newline                                   {%e().flat().reorder(2, 6, 7).kind('type').commentable()%}
 
 
 # //----------------------------------------------------------------------

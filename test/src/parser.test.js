@@ -504,4 +504,25 @@ describe( "parser", () => {
 
 	} );
 
+	describe( "types", () => {
+
+		it( "works", () => expectParse( `
+			type a extends b
+			  type   c    extends    d   //with comment
+		`, `
+			Program [
+				Type {
+					base: String "a"
+					super: String "b"
+				}
+				Type {
+					base: String "c"
+					super: String "d"
+					comment: Comment "with comment"
+				}
+			]
+		` ) );
+
+	} );
+
 } );

@@ -178,6 +178,16 @@ class UnaryOp extends Node {
 
 }
 
+class Type extends Node {
+
+	static get map() {
+
+		return [ "base", "super" ];
+
+	}
+
+}
+
 class List extends Array {
 
 	constructor( arr ) {
@@ -228,7 +238,8 @@ export const map = {
 	array_ref: ArrayRef,
 	unary_op: UnaryOp,
 	func_ref: FuncRef,
-	emptyline: EmptyLine
+	emptyline: EmptyLine,
+	type: Type
 };
 
 export {
@@ -260,5 +271,6 @@ export {
 	EmptyLine,
 	List,
 	SingleProp,
-	Node
+	Node,
+	Type
 };
