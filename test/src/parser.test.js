@@ -69,6 +69,7 @@ describe( "parser", () => {
 
 	it( "natives", () => expectParse( `
 		native FuncName takes argType1 argName1, argType2 argName2 returns returnType //with comments
+		constant native foo takes nothing returns nothing
 	`, `
 		Program [
 			Native {
@@ -85,6 +86,10 @@ describe( "parser", () => {
 				]
 				returns: String "returnType"
 				comment: Comment "with comments"
+			}
+			Native {
+				name: String "foo"
+				constant: Boolean true
 			}
 		]
 	` ) );
@@ -507,13 +512,13 @@ describe( "parser", () => {
 	describe( "types", () => {
 
 		it( "works", () => expectParse( `
-			type a extends b
+			type a extends handle
 			  type   c    extends    d   //with comment
 		`, `
 			Program [
 				Type {
 					base: String "a"
-					super: String "b"
+					super: String "handle"
 				}
 				Type {
 					base: String "c"

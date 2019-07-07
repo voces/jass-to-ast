@@ -128,7 +128,7 @@ _globals_block_statement   -> emptyline
 globals_statement_constant -> "constant" __ type __ name _ "=" _ expr                                       {%e().flat().reorder(2, 4, 8).kind('var').assign({constant: true})%}
 
 native_func                -> "native" __ func_declr newline                                                {%e().flat().reorder(2, 3, 4, 5).kind('native').commentable()%}
-                            | "constant" __ func_declr
+                            | "constant native" __ func_declr newline                                       {%e().flat().reorder(2, 3, 4, 5).kind('native').commentable().assign({constant: true})%}
 
 func_declr                 -> name __ "takes" __ param_list __ "returns" __ func_return                     {%e().flat().reorder(0, 4, 8)%}
 
@@ -141,7 +141,7 @@ func_return                -> type
 function_block             -> "function" _ func_declr newline statements:? _ "endfunction" newline          {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment')%}
                             | "constant function" _ func_declr newline statements:? _ "endfunction" newline {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({constant: true})%}
 
-type_declr                 -> "type" __ name __ "extends" __ name newline                                   {%e().flat().reorder(2, 6, 7).kind('type').commentable()%}
+type_declr                 -> "type" __ type __ "extends" __ type newline                                   {%e().flat().reorder(2, 6, 7).kind('type').commentable()%}
 
 
 # //----------------------------------------------------------------------
