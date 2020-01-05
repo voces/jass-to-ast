@@ -1,12 +1,13 @@
 {
   "name": "jass-to-ast",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Converts WC3 JASS to an abstract syntax tree",
   "main": "src/parser.js",
   "module": "src/parser.js",
   "scripts": {
     "test": "vt **/*.test.js",
-    "build": "node --experimental-modules --no-warnings src/grammar/build.js"
+    "build": "node --experimental-modules --no-warnings src/grammar/build.js",
+    "jest": "jest"
   },
   "repository": {
     "type": "git",
@@ -26,19 +27,18 @@
   },
   "homepage": "https://github.com/voces/jass-to-ast#readme",
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "chai": "^4.2.0",
+    "babel-eslint": "^10.0.3",
     "diff": "^4.0.1",
-    "eslint": "^5.16.0",
+    "eslint": "^6.8.0",
     "eslint-config-mdcs": "^4.2.3",
-    "eslint-config-verit": "^1.0.2",
-    "eslint-plugin-html": "^5.0.3",
-    "eslint-plugin-mocha": "^5.2.1",
+    "eslint-config-verit": "^1.0.3",
+    "eslint-plugin-html": "^6.0.0",
+    "eslint-plugin-mocha": "^6.2.2",
     "verit-test": "^3.1.0"
   },
   "dependencies": {
     "@voces/nearley": "^2.16.0",
-    "moo": "^0.5.0"
+    "moo": "^0.5.1"
   },
   "type": "module",
   "files": [

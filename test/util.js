@@ -71,28 +71,18 @@ export const minimizePrettyDiff = prettyDiff => {
         diffedLines[ index - 1 ] ||
         diffedLines[ index ] ||
         diffedLines[ index + 1 ] ||
-        diffedLines[ index + 2 ] ? index.toString().padStart( linenoLength ) + " " + line : undefined
+        diffedLines[ index + 2 ] ? index.toString().padStart( linenoLength ) + " " + line : undefined,
 	).filter( v => v !== undefined ).join( "\n" );
 
 };
 
 export const expectParse = ( input, expected ) => {
 
-	let ast;
-
-	try {
-
-		ast = parser( trim( input ) );
-
-	} catch ( err ) {
-
-		throw err;
-
-	}
+	const ast = parser( trim( input ) );
 
 	const diff = Diff.diffLines(
 		inspect( ast ).trim(),
-		trim( expected )
+		trim( expected ),
 	);
 
 	const different = diff.some( diff => diff.removed || diff.added );

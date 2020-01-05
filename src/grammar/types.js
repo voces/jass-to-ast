@@ -239,7 +239,7 @@ export const map = {
 	unary_op: UnaryOp,
 	func_ref: FuncRef,
 	emptyline: EmptyLine,
-	type: Type
+	type: Type,
 };
 
 export {
@@ -272,5 +272,5 @@ export {
 	List,
 	SingleProp,
 	Node,
-	Type
+	Type,
 };

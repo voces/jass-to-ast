@@ -1,5 +1,4 @@
 {
 	"extends": [ "verit" ],
-	"parser": "babel-eslint",
-	"plugins": [ "html" ]
+	"parser": "babel-eslint"
 }
