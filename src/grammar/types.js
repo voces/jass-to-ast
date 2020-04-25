@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 
 class Comment extends String {}
 class FourCC extends String {}

@@ -1,7 +1,6 @@
 
-import { describe, it } from "verit-test";
-
-import { expectParse } from "../util.js";
+import { expectParse, trim } from "../util";
+import parser from "../../src/parser.js";
 
 describe( "parser", () => {
 
@@ -527,6 +526,16 @@ describe( "parser", () => {
 				}
 			]
 		` ) );
+
+	} );
+
+	it( "chars", () => {
+
+		expect( parser( trim( `
+			function a takes nothing returns nothing
+				local integer i = 'a'
+			endfunction
+		` ) ) ).toMatchSnapshot();
 
 	} );
 

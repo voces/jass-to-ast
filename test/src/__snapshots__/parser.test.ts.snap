@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parser chars 1`] = `
+Program [
+  JASSFunction {
+    "name": "a",
+    "statements": Statements [
+      Variable {
+        "name": "i",
+        "type": "integer",
+        "value": 97,
+      },
+    ],
+  },
+]
+`;

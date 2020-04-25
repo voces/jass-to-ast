@@ -1,3 +1,4 @@
+@preprocessor typescript
 @{%
 
 import { map as classes, List } from "./types.js";
@@ -253,7 +254,7 @@ bool_const                 -> "true"                                            
                             | "false"                                                                       {%e().fn(JSON.parse)%}
 
 string_const               -> "\"" ([^"] | "\\\""):* "\""                                                   {%string.fn(v => v.slice(1, -1))%}
-                            | "'" [^'] "'"                                                                  {%string.fn(v => v.slice(1, -1))%}
+                            | "'" [^'] "'"                                                                  {%string.fn(v => v.slice(1, -1).charCodeAt())%}
 
 logical_op                 -> logical_op __ ("and"|"or") __ binary_op                                       {%e().flat().reorder(0, 2, 4).kind('binary_op')%}
                             | logical_op __ ("and"|"or") right_binary_op                                    {%e().flat().reorder(0, 2, 3).kind('binary_op')%}

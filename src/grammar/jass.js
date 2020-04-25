@@ -288,7 +288,7 @@ let ParserRules = [
     {"name": "string_const$ebnf$1$subexpression$1", "symbols": ["string_const$ebnf$1$subexpression$1$string$1"]},
     {"name": "string_const$ebnf$1", "symbols": ["string_const$ebnf$1", "string_const$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "string_const", "symbols": [{"literal":"\""}, "string_const$ebnf$1", {"literal":"\""}], "postprocess": string.fn(v => v.slice(1, -1))},
-    {"name": "string_const", "symbols": [{"literal":"'"}, /[^']/, {"literal":"'"}], "postprocess": string.fn(v => v.slice(1, -1))},
+    {"name": "string_const", "symbols": [{"literal":"'"}, /[^']/, {"literal":"'"}], "postprocess": string.fn(v => v.slice(1, -1).charCodeAt())},
     {"name": "logical_op$subexpression$1$string$1", "symbols": [{"literal":"a"}, {"literal":"n"}, {"literal":"d"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "logical_op$subexpression$1", "symbols": ["logical_op$subexpression$1$string$1"]},
     {"name": "logical_op$subexpression$1$string$2", "symbols": [{"literal":"o"}, {"literal":"r"}], "postprocess": function joiner(d) {return d.join('');}},

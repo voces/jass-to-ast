@@ -1,0 +1,51 @@
+
+import parser from "../src/parser.js";
+import { inspect } from "../src/util.js";
+
+const trimEmptyLines = ( str: string ): string => {
+
+	const lines = str.split( "\n" );
+
+	let start = 0;
+	while ( lines[ start ].trim() === "" && start < lines.length )
+		start ++;
+
+	if ( start === lines.length ) return "";
+
+	let end = lines.length - 1;
+	while ( lines[ end ].trim() === "" && end >= 0 )
+		end --;
+
+	if ( end === - 1 ) return "";
+
+	return lines.slice( start, end + 1 ).join( "\n" );
+
+};
+
+export const trim = ( str: string ): string => {
+
+	const lines = trimEmptyLines( str );
+	const match = lines.match( /^\W+/ );
+	if ( match ) {
+
+		const indent = match[ 0 ];
+		const regex = new RegExp( "^" + indent );
+		return lines
+			.split( "\n" )
+			.map( line => line.replace( regex, "" ) )
+			.join( "\n" );
+
+	}
+
+	return lines;
+
+};
+
+export const expectParse = ( input: string, expected: string ): void => {
+
+	const ast = parser( trim( input ) );
+
+	expect( inspect( ast ) ).toEqual( trim( expected ) );
+
+};
+

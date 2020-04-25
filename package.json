@@ -1,6 +1,6 @@
 {
   "name": "jass-to-ast",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Converts WC3 JASS to an abstract syntax tree",
   "main": "src/parser.js",
   "module": "src/parser.js",
@@ -27,14 +27,21 @@
   },
   "homepage": "https://github.com/voces/jass-to-ast#readme",
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
-    "diff": "^4.0.1",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.2.1",
+    "@types/nearley": "^2.11.1",
+    "@types/node": "^13.13.2",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^6.8.0",
     "eslint-config-mdcs": "^4.2.3",
-    "eslint-config-verit": "^1.0.3",
-    "eslint-plugin-html": "^6.0.0",
-    "eslint-plugin-mocha": "^6.2.2",
-    "verit-test": "^3.1.0"
+    "eslint-config-verit": "^1.0.4",
+    "jest": "^25.4.0",
+    "ts-jest": "^25.4.0",
+    "ts-node": "^8.9.0",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@voces/nearley": "^2.16.0",
