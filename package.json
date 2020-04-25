@@ -5,9 +5,8 @@
   "main": "src/parser.js",
   "module": "src/parser.js",
   "scripts": {
-    "test": "vt **/*.test.js",
-    "build": "node --experimental-modules --no-warnings src/grammar/build.js",
-    "jest": "jest"
+    "test": "jest",
+    "build": "node --experimental-modules --no-warnings src/grammar/build.js"
   },
   "repository": {
     "type": "git",
