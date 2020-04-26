@@ -4,6 +4,8 @@ import grammar from "./grammar/jass.js";
 
 export class AmbiguousError extends Error {}
 
+export * from "./grammar/types.js";
+
 export default input => {
 
 	if ( input[ input.length - 1 ] !== "\n" ) input += "\nfin";
@@ -21,5 +23,3 @@ export default input => {
 	return parser.results[ 0 ];
 
 };
-
-export * from "./grammar/types.js";
