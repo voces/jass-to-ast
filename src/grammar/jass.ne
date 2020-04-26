@@ -7,9 +7,10 @@ let fin = false;
 const o = fn => ( result, ...args ) => fin ? fn( result, ...args ) : result;
 const nil = () => null;
 const keywords = [
-    "null", "globals", "endglobals", "code", "handle", "integer", "real", "boolean", "string",
-    "constant", "array", "true", "false", "native", "nothing", "takes", "returns", "function",
-    "endfunction", "if", "then", "endif", "else", "elseif", "return", "loop", "endloop", "not"
+    "null", "globals", "endglobals", "code", "handle", "integer", "real",
+    "boolean", "string", "constant", "array", "true", "false", "native",
+    "nothing", "takes", "returns", "function", "endfunction", "if", "then",
+    "endif", "else", "elseif", "return", "loop", "endloop", "not", "debug",
 ];
 
 const flat = ( arr, depth = Infinity ) => {
@@ -173,6 +174,7 @@ __statement                -> local
                             | loop
                             | exitwhen
                             | return
+                            | debug
 
 set                        -> "set" __ name _ "=" _ expr                                                    {%e().flat().reorder(2, 6).kind('set')%}
                             | "set" __ name _ "[" _ expr _ "]" _ "=" _ expr                                 {%e().flat().reorder(2, 12, 6).kind('set')%}
@@ -194,6 +196,8 @@ loop                       -> "loop" newline statements:? _ "endloop"           
 exitwhen                   -> "exitwhen" _ expr                                                             {%e().flat().reorder(2).kind('exitwhen')%}
 
 return                     -> "return" (_ expr):?                                                           {%e().flat().reorder(2).kind('return')%}
+
+debug                      -> "debug" _ __statement                                                         {%e().flat().reorder(2).kind('debug')%}
 
 # //----------------------------------------------------------------------
 # // Expressions
@@ -366,3 +370,4 @@ __                         -> [ \t]:+                                           
 
 # todo: move the newline out of comment
 comment                    -> "//" [^\n]:* "\n"                                                             {%string.fn(s => [s.slice(2, -1)]).kind('comment')%}
+                            | "/*" [^*]:* ("*":+ [^/*] [^*]:*):* "*":* "*/"                                 {%e().flat().join().fn(s => s.slice(2, -2)).kind("comment")%}

@@ -8,9 +8,10 @@ let fin = false;
 const o = fn => ( result, ...args ) => fin ? fn( result, ...args ) : result;
 const nil = () => null;
 const keywords = [
-    "null", "globals", "endglobals", "code", "handle", "integer", "real", "boolean", "string",
-    "constant", "array", "true", "false", "native", "nothing", "takes", "returns", "function",
-    "endfunction", "if", "then", "endif", "else", "elseif", "return", "loop", "endloop", "not"
+    "null", "globals", "endglobals", "code", "handle", "integer", "real",
+    "boolean", "string", "constant", "array", "true", "false", "native",
+    "nothing", "takes", "returns", "function", "endfunction", "if", "then",
+    "endif", "else", "elseif", "return", "loop", "endloop", "not", "debug",
 ];
 
 const flat = ( arr, depth = Infinity ) => {
@@ -178,6 +179,7 @@ let ParserRules = [
     {"name": "__statement", "symbols": ["loop"]},
     {"name": "__statement", "symbols": ["exitwhen"]},
     {"name": "__statement", "symbols": ["return"]},
+    {"name": "__statement", "symbols": ["debug"]},
     {"name": "set$string$1", "symbols": [{"literal":"s"}, {"literal":"e"}, {"literal":"t"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "set", "symbols": ["set$string$1", "__", "name", "_", {"literal":"="}, "_", "expr"], "postprocess": e().flat().reorder(2, 6).kind('set')},
     {"name": "set$string$2", "symbols": [{"literal":"s"}, {"literal":"e"}, {"literal":"t"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -225,6 +227,8 @@ let ParserRules = [
     {"name": "return$ebnf$1", "symbols": ["return$ebnf$1$subexpression$1"], "postprocess": id},
     {"name": "return$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "return", "symbols": ["return$string$1", "return$ebnf$1"], "postprocess": e().flat().reorder(2).kind('return')},
+    {"name": "debug$string$1", "symbols": [{"literal":"d"}, {"literal":"e"}, {"literal":"b"}, {"literal":"u"}, {"literal":"g"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "debug", "symbols": ["debug$string$1", "_", "__statement"], "postprocess": e().flat().reorder(2).kind('debug')},
     {"name": "expr", "symbols": ["logical_op"]},
     {"name": "_expr", "symbols": ["name"], "postprocess": e().kind('name')},
     {"name": "_expr", "symbols": ["const"]},
@@ -513,7 +517,21 @@ let ParserRules = [
     {"name": "comment$string$1", "symbols": [{"literal":"/"}, {"literal":"/"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "comment$ebnf$1", "symbols": []},
     {"name": "comment$ebnf$1", "symbols": ["comment$ebnf$1", /[^\n]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment", "symbols": ["comment$string$1", "comment$ebnf$1", {"literal":"\n"}], "postprocess": string.fn(s => [s.slice(2, -1)]).kind('comment')}
+    {"name": "comment", "symbols": ["comment$string$1", "comment$ebnf$1", {"literal":"\n"}], "postprocess": string.fn(s => [s.slice(2, -1)]).kind('comment')},
+    {"name": "comment$string$2", "symbols": [{"literal":"/"}, {"literal":"*"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "comment$ebnf$2", "symbols": []},
+    {"name": "comment$ebnf$2", "symbols": ["comment$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "comment$ebnf$3", "symbols": []},
+    {"name": "comment$ebnf$3$subexpression$1$ebnf$1", "symbols": [{"literal":"*"}]},
+    {"name": "comment$ebnf$3$subexpression$1$ebnf$1", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$1", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "comment$ebnf$3$subexpression$1$ebnf$2", "symbols": []},
+    {"name": "comment$ebnf$3$subexpression$1$ebnf$2", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "comment$ebnf$3$subexpression$1", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$1", /[^/*]/, "comment$ebnf$3$subexpression$1$ebnf$2"]},
+    {"name": "comment$ebnf$3", "symbols": ["comment$ebnf$3", "comment$ebnf$3$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "comment$ebnf$4", "symbols": []},
+    {"name": "comment$ebnf$4", "symbols": ["comment$ebnf$4", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "comment$string$3", "symbols": [{"literal":"*"}, {"literal":"/"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "comment", "symbols": ["comment$string$2", "comment$ebnf$2", "comment$ebnf$3", "comment$ebnf$4", "comment$string$3"], "postprocess": e().flat().join().fn(s => s.slice(2, -2)).kind("comment")}
 ];
 let ParserStart = "program";
 export default { Lexer, ParserRules, ParserStart };

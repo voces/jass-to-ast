@@ -1,5 +1,5 @@
 
-import { SingleProp } from "./grammar/types.js";
+import { Node, SingleProp } from "./grammar/types.js";
 
 const primitives = [ String, Boolean ];
 
@@ -10,9 +10,15 @@ const primitiveNode = node =>
 
 export const inspect = ( ast, enumerable = true, char = "\t", depth = 0 ) => {
 
-	if ( ast === undefined ) return char.repeat( depth ) + "__undefined__";
-	if ( ast === null ) return char.repeat( depth ) + "Null";
-	if ( primitiveNode( ast ) ) return char.repeat( depth ) + ast.constructor.name + " " + JSON.stringify( ast );
+	if ( ast === undefined )
+		return char.repeat( depth ) + "__undefined__";
+
+	if ( ast === null )
+		return char.repeat( depth ) + "Null";
+
+	if ( primitiveNode( ast ) )
+		return char.repeat( depth ) + ast.constructor.name + " " + JSON.stringify( ast );
+
 	if ( ast instanceof SingleProp )
 
 		return char.repeat( depth ) + ast.constructor.name + " " + inspect( ast.data[ 0 ], enumerable, char, depth ).trim();
@@ -28,6 +34,7 @@ export const inspect = ( ast, enumerable = true, char = "\t", depth = 0 ) => {
 		return s + char.repeat( depth ) + "]";
 
 	}
+
 	const s = char.repeat( depth ) + ast.constructor.name + " {";
 	let body = "";
 	if ( enumerable )

@@ -14,3 +14,37 @@ Program [
   },
 ]
 `;
+
+exports[`parser comments multiline 1`] = `
+"Program [
+  EmptyLine {},
+  [String (Comment): ' multi\\\\n\\\\t\\\\t\\\\t\\\\tline\\\\n\\\\t\\\\t\\\\t\\\\tcomments '],
+  EmptyLine {},
+  EmptyLine {}
+]"
+`;
+
+exports[`parser comments single line 1`] = `
+"Program [
+  EmptyLine {},
+  [String (Comment): ' single line comment'],
+  EmptyLine {}
+]"
+`;
+
+exports[`parser debug 1`] = `
+Program [
+  JASSFunction {
+    "name": "a",
+    "statements": Statements [
+      Debug {
+        "statement": Variable {
+          "name": "i",
+          "type": "integer",
+          "value": 97,
+        },
+      },
+    ],
+  },
+]
+`;

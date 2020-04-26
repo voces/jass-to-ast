@@ -1,19 +1,19 @@
 
 import parser from "../src/parser.js";
-import { inspect } from "../src/util.js";
+import { inspect } from "../src/util";
 
-const trimEmptyLines = ( str: string ): string => {
+export const trimEmptyLines = ( str: string ): string => {
 
 	const lines = str.split( "\n" );
 
 	let start = 0;
-	while ( lines[ start ].trim() === "" && start < lines.length )
+	while ( lines[ start ].trim() === "" && start + 1 < lines.length )
 		start ++;
 
 	if ( start === lines.length ) return "";
 
 	let end = lines.length - 1;
-	while ( lines[ end ].trim() === "" && end >= 0 )
+	while ( lines[ end ].trim() === "" && end > 0 )
 		end --;
 
 	if ( end === - 1 ) return "";
@@ -25,7 +25,7 @@ const trimEmptyLines = ( str: string ): string => {
 export const trim = ( str: string ): string => {
 
 	const lines = trimEmptyLines( str );
-	const match = lines.match( /^\W+/ );
+	const match = lines.match( /^\s+/ );
 	if ( match ) {
 
 		const indent = match[ 0 ];

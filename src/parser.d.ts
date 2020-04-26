@@ -18,6 +18,11 @@ export class FuncRef extends SingleProp {}
 export class ExitWhen extends SingleProp {}
 export class Return extends SingleProp {}
 export class Parens extends SingleProp {}
+export class Debug extends Node {
+
+    statement: Node;
+
+}
 export class Type extends Node {
 
     base: Name | "code" | "handle" | "integer" | "real" | "boolean" | "string";

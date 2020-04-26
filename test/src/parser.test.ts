@@ -1,6 +1,7 @@
 
 import { expectParse, trim } from "../util";
-import parser from "../../src/parser.js";
+import parser from "../../src/parser";
+import { inspect } from "util";
 
 describe( "parser", () => {
 
@@ -536,6 +537,38 @@ describe( "parser", () => {
 				local integer i = 'a'
 			endfunction
 		` ) ) ).toMatchSnapshot();
+
+	} );
+
+	it( "debug", () => {
+
+		expect( parser( trim( `
+			function a takes nothing returns nothing
+				debug local integer i = 'a'
+			endfunction
+		` ) ) ).toMatchSnapshot();
+
+	} );
+
+	describe( "comments", () => {
+
+		it( "multiline", () => {
+
+			expect( inspect( parser( `
+				/* multi
+				line
+				comments */
+			` ) ) ).toMatchSnapshot();
+
+		} );
+
+		it( "single line", () => {
+
+			expect( inspect( parser( `
+				// single line comment
+			` ) ) ).toMatchSnapshot();
+
+		} );
 
 	} );
 

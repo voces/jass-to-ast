@@ -9,6 +9,6 @@ module.exports = {
 		"^.+\\.ts$": "babel-jest",
 		"^.+\\.js$": "babel-jest",
 	},
-	testRegex: "(/src/.*\\.test)\\.[tj]s$",
+	testRegex: "(.*\\.test)\\.[tj]s$",
 	testEnvironment: "node",
 };

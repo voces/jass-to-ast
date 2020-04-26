@@ -21,3 +21,5 @@ export default input => {
 	return parser.results[ 0 ];
 
 };
+
+export * from "./grammar/types.js";
