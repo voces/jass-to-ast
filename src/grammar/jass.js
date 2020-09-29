@@ -1,121 +1,164 @@
 // Generated automatically by nearley, version unknown
 // http://github.com/Hardmath123/nearley
 
-
 import { map as classes, List } from "./types.js";
 
+// eslint-disable-next-line prefer-const
 let fin = false;
-const o = fn => ( result, ...args ) => fin ? fn( result, ...args ) : result;
-const nil = () => null;
-const keywords = [
-    "null", "globals", "endglobals", "code", "handle", "integer", "real",
-    "boolean", "string", "constant", "array", "true", "false", "native",
-    "nothing", "takes", "returns", "function", "endfunction", "if", "then",
-    "endif", "else", "elseif", "return", "loop", "endloop", "not", "debug",
+
+export const o = (fn) => (result, ...args) => {
+	program = { comments: [] };
+	return fin ? fn(result, ...args) : result;
+};
+
+export const nil = () => null;
+
+export const keywords = [
+	"null",
+	"globals",
+	"endglobals",
+	"code",
+	"handle",
+	"integer",
+	"real",
+	"boolean",
+	"string",
+	"constant",
+	"array",
+	"true",
+	"false",
+	"native",
+	"nothing",
+	"takes",
+	"returns",
+	"function",
+	"endfunction",
+	"if",
+	"then",
+	"endif",
+	"else",
+	"elseif",
+	"return",
+	"loop",
+	"endloop",
+	"not",
+	"debug",
 ];
 
-const flat = ( arr, depth = Infinity ) => {
-
-    if ( ! depth ) return arr.slice();
-    if ( ! Array.isArray( arr ) ) return arr;
-    return arr.reduce( ( acc, cur ) => {
-
-        if ( Array.isArray( cur ) && ! ( cur instanceof List ) )
-            acc.push( ...flat( cur, depth - 1 ) );
-        else acc.push( cur );
-        return acc;
-
-    }, arr.constructor === Array ? [] : new arr.constructor() );
-
+const flat = (arr, depth = Infinity) => {
+	if (!depth) return arr.slice();
+	if (!Array.isArray(arr)) return arr;
+	return arr.reduce(
+		(acc, cur) => {
+			if (Array.isArray(cur) && !(cur instanceof List))
+				acc.push(...flat(cur, depth - 1));
+			else acc.push(cur);
+			return acc;
+		},
+		arr.constructor === Array ? [] : new arr.constructor(),
+	);
 };
 
 const reject = {};
-const e = ( fn = data => data ) => {
+const e = (fn = (data) => data) => {
+	fn.index = (index) => e((data) => (fn(data) || [])[index]);
+	fn.first = () => e((data) => (fn(data) || [])[0]);
+	fn.second = () => e((data) => fn(data)[1]);
+	fn.map = (fn2) => e((data) => fn(data).map(fn2));
+	fn.filter = (fn2) => e((data) => fn(data).filter(fn2));
+	fn.clean = () =>
+		e((data) => fn(data).filter((v) => v !== null && v !== undefined));
+	fn.fn = (fn2) => e((data) => fn2(fn(data)));
+	fn.pick = (...args) =>
+		e((data) => {
+			data = fn(data);
+			if (Array.isArray(data))
+				return data
+					.map((v, i) => {
+						if (typeof args[i] !== "function")
+							return args[i] ? v : reject;
+						return args[i](v);
+					})
+					.filter((v) => v !== reject);
+		});
+	fn.flat = (depth = Infinity) => e((data) => flat(fn(data), depth));
+	fn.join = (delim = "") => e((data) => fn(data).join(delim));
+	fn.arr = () => e((data) => [fn(data)]);
+	fn.obj = (...names) =>
+		e((data) => {
+			data = fn(data) || [];
+			data = data.map((v, i) => [names[i], v]);
+			return Object.fromEntries(data);
+		});
+	fn.assign = (obj) => e((data) => Object.assign(fn(data), obj));
+	fn.kind = (kind) => {
+		const klass = classes[kind];
+		if (klass) return e((data) => new klass(fn(data)));
+		return e((data) => ({ kind, data: fn(data) }));
+	};
+	fn.dev = (tag) => e((data) => ({ kind: "dev", tag, data: fn(data) }));
+	fn.reorder = (...newPos) =>
+		e((data) => {
+			data = fn(data);
+			const arr = [];
+			for (let i = 0; i < newPos.length; i++) arr.push(data[newPos[i]]);
+			return arr;
+		});
+	fn.commentable = (commentName = "comment") =>
+		e((data) => {
+			data = fn(data);
+			if (
+				data &&
+				Array.isArray(data.data) &&
+				data.data[data.data.length - 1]
+			)
+				data[commentName] = data.data[data.data.length - 1];
+			return data;
+		});
+	fn.lastAsComment = (commentName = "comment") =>
+		e((data) => {
+			data = fn(data);
+			if (
+				data &&
+				Array.isArray(data) &&
+				data[data.length - 2] &&
+				data[data.length - 1]
+			)
+				data[data.length - 2][commentName] = data[data.length - 1];
 
-    fn.index = index => e( data => ( fn( data ) || [] )[ index ] );
-    fn.first = () => e( data => ( fn( data ) || [] )[ 0 ] );
-    fn.second = () => e( data => fn( data )[ 1 ] );
-    fn.map = fn2 => e( data => fn( data ).map( fn2 ) );
-    fn.filter = fn2 => e( data => fn( data ).filter( fn2 ) );
-    fn.clean = () => e( data => fn( data ).filter( v => v !== null && v !== undefined ) );
-    fn.fn = fn2 => e( data => fn2( fn( data ) ) );
-    fn.pick = ( ...args ) => e( data => {
+			return data.slice(0, -1);
+		});
 
-        data = fn( data );
-        if ( Array.isArray( data ) ) return data.map( ( v, i ) => {
-
-            if ( typeof args[ i ] !== "function" ) return args[ i ] ? v : reject;
-            return args[ i ]( v );
-
-        } ).filter( v => v !== reject );
-
-    } );
-    fn.flat = ( depth = Infinity ) => e( data => flat( fn( data ), depth ) );
-    fn.join = ( delim = "" ) => e( data => fn( data ).join( delim ) );
-    fn.arr = () => e( data => [ fn( data ) ] );
-    fn.obj = ( ...names ) => e( data => {
-
-        data = fn( data ) || [];
-        data = data.map( ( v, i ) => [ names[ i ], v ] );
-        return Object.fromEntries( data );
-
-    } );
-    fn.assign = obj => e( data => Object.assign( fn( data ), obj ) );
-    fn.kind = kind => {
-
-        const klass = classes[ kind ];
-        if ( klass ) return e( data => new klass( fn( data ) ) );
-        return e( data => ( { kind, data: fn( data ) } ) );
-
-    };
-    fn.dev = tag => e( data => ( { kind: "dev", tag, data: fn( data ) } ) );
-    fn.reorder = ( ...newPos ) => e( data => {
-
-        data = fn( data );
-        const arr = [];
-        for ( let i = 0; i < newPos.length; i ++ )
-            arr.push( data[ newPos[ i ] ] );
-        return arr;
-
-    } );
-    fn.commentable = ( commentName = "comment" ) => e( data => {
-
-        data = fn( data );
-        if ( data && Array.isArray( data.data ) && data.data[ data.data.length - 1 ] )
-            data[ commentName ] = data.data[ data.data.length - 1 ];
-        return data;
-
-    } );
-    fn.lastAsComment = ( commentName = "comment" ) => e( data => {
-
-        data = fn( data );
-        if ( data && Array.isArray( data ) && data[ data.length - 2 ] && data[ data.length - 1 ] )
-            data[ data.length - 2 ][ commentName ] = data[ data.length - 1 ];
-
-        return data.slice( 0, - 1 );
-
-    } );
-
-    return fn;
-
+	return fn;
 };
 
-const string = e().flat().join();
+export const string = e().flat().join();
+
+export const removeNulls = (obj) =>
+	Object.fromEntries(
+		Object.entries(obj).filter(
+			([, v]) => v && !(Array.isArray(v) && v.length === 0),
+		),
+	);
+
+export let program = { comments: [] };
 
 function id(x) { return x[0]; }
 let Lexer = undefined;
 let ParserRules = [
     {"name": "program$ebnf$1", "symbols": ["program_blocks"]},
     {"name": "program$ebnf$1", "symbols": ["program$ebnf$1", "program_blocks"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "program", "symbols": ["program$ebnf$1", "_", "fin"], "postprocess": o(e().flat().clean().kind('program'))},
+    {"name": "program", "symbols": ["program$ebnf$1", "_", "fin"], "postprocess": o(e().flat().clean().kind('program').assign(removeNulls(program)))},
     {"name": "fin$string$1", "symbols": [{"literal":"f"}, {"literal":"i"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "fin", "symbols": ["fin$string$1"], "postprocess": () => (fin = true, null)},
-    {"name": "program_blocks", "symbols": ["emptyline"]},
-    {"name": "program_blocks", "symbols": ["_program_block"], "postprocess": e().flat().reorder(1)},
+    {"name": "program_blocks", "symbols": ["emptyline"], "postprocess": e().first()},
+    {"name": "program_blocks", "symbols": ["_program_block"], "postprocess": e().flat().second()},
     {"name": "_program_block", "symbols": ["_", "globals_block"]},
     {"name": "_program_block", "symbols": ["_", "native_func"]},
     {"name": "_program_block", "symbols": ["_", "function_block"]},
     {"name": "_program_block", "symbols": ["_", "type_declr"]},
+    {"name": "_program_block", "symbols": ["_", "library_block"]},
+    {"name": "_program_block", "symbols": ["_", "staticif"]},
     {"name": "globals_block$string$1", "symbols": [{"literal":"g"}, {"literal":"l"}, {"literal":"o"}, {"literal":"b"}, {"literal":"a"}, {"literal":"l"}, {"literal":"s"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "globals_block$ebnf$1", "symbols": ["globals_block_statements"], "postprocess": id},
     {"name": "globals_block$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
@@ -125,10 +168,11 @@ let ParserRules = [
     {"name": "globals_block_statements$ebnf$1", "symbols": ["globals_block_statements$ebnf$1", "_globals_block_statement"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "globals_block_statements", "symbols": ["globals_block_statements$ebnf$1"], "postprocess": e().flat().kind('statements')},
     {"name": "_globals_block_statement", "symbols": ["emptyline"]},
-    {"name": "_globals_block_statement", "symbols": ["_", "var_declr", "newline"], "postprocess": e().flat().reorder(1, 2).lastAsComment()},
-    {"name": "_globals_block_statement", "symbols": ["_", "globals_statement_constant", "newline"], "postprocess": e().flat().reorder(1, 2).lastAsComment()},
-    {"name": "globals_statement_constant$string$1", "symbols": [{"literal":"c"}, {"literal":"o"}, {"literal":"n"}, {"literal":"s"}, {"literal":"t"}, {"literal":"a"}, {"literal":"n"}, {"literal":"t"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "globals_statement_constant", "symbols": ["globals_statement_constant$string$1", "__", "type", "__", "name", "_", {"literal":"="}, "_", "expr"], "postprocess": e().flat().reorder(2, 4, 8).kind('var').assign({constant: true})},
+    {"name": "_globals_block_statement", "symbols": ["_", "var_declr", "newline"], "postprocess": e().flat().reorder(1, 2).lastAsComment().first().assign({access: 'global'})},
+    {"name": "_globals_block_statement$string$1", "symbols": [{"literal":"p"}, {"literal":"r"}, {"literal":"i"}, {"literal":"v"}, {"literal":"a"}, {"literal":"t"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_globals_block_statement", "symbols": ["_", "_globals_block_statement$string$1", "__", "var_declr", "newline"], "postprocess": e().flat().reorder(3, 4).lastAsComment().first().assign({access: 'private'})},
+    {"name": "_globals_block_statement$string$2", "symbols": [{"literal":"p"}, {"literal":"u"}, {"literal":"b"}, {"literal":"l"}, {"literal":"i"}, {"literal":"c"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_globals_block_statement", "symbols": ["_", "_globals_block_statement$string$2", "__", "var_declr", "newline"], "postprocess": e().flat().reorder(3, 4).lastAsComment().first().assign({access: 'public'})},
     {"name": "native_func$string$1", "symbols": [{"literal":"n"}, {"literal":"a"}, {"literal":"t"}, {"literal":"i"}, {"literal":"v"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "native_func", "symbols": ["native_func$string$1", "__", "func_declr", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5).kind('native').commentable()},
     {"name": "native_func$string$2", "symbols": [{"literal":"c"}, {"literal":"o"}, {"literal":"n"}, {"literal":"s"}, {"literal":"t"}, {"literal":"a"}, {"literal":"n"}, {"literal":"t"}, {"literal":" "}, {"literal":"n"}, {"literal":"a"}, {"literal":"t"}, {"literal":"i"}, {"literal":"v"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -149,24 +193,67 @@ let ParserRules = [
     {"name": "function_block$ebnf$1", "symbols": ["statements"], "postprocess": id},
     {"name": "function_block$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "function_block$string$2", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "function_block", "symbols": ["function_block$string$1", "_", "func_declr", "newline", "function_block$ebnf$1", "_", "function_block$string$2", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment')},
+    {"name": "function_block", "symbols": ["function_block$string$1", "_", "func_declr", "newline", "function_block$ebnf$1", "_", "function_block$string$2", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'global'})},
     {"name": "function_block$string$3", "symbols": [{"literal":"c"}, {"literal":"o"}, {"literal":"n"}, {"literal":"s"}, {"literal":"t"}, {"literal":"a"}, {"literal":"n"}, {"literal":"t"}, {"literal":" "}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "function_block$ebnf$2", "symbols": ["statements"], "postprocess": id},
     {"name": "function_block$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "function_block$string$4", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "function_block", "symbols": ["function_block$string$3", "_", "func_declr", "newline", "function_block$ebnf$2", "_", "function_block$string$4", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({constant: true})},
+    {"name": "function_block$string$5", "symbols": [{"literal":"p"}, {"literal":"r"}, {"literal":"i"}, {"literal":"v"}, {"literal":"a"}, {"literal":"t"}, {"literal":"e"}, {"literal":" "}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "function_block$ebnf$3", "symbols": ["statements"], "postprocess": id},
+    {"name": "function_block$ebnf$3", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "function_block$string$6", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "function_block", "symbols": ["function_block$string$5", "_", "func_declr", "newline", "function_block$ebnf$3", "_", "function_block$string$6", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'private'})},
+    {"name": "function_block$string$7", "symbols": [{"literal":"p"}, {"literal":"u"}, {"literal":"b"}, {"literal":"l"}, {"literal":"i"}, {"literal":"c"}, {"literal":" "}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "function_block$ebnf$4", "symbols": ["statements"], "postprocess": id},
+    {"name": "function_block$ebnf$4", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "function_block$string$8", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"f"}, {"literal":"u"}, {"literal":"n"}, {"literal":"c"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "function_block", "symbols": ["function_block$string$7", "_", "func_declr", "newline", "function_block$ebnf$4", "_", "function_block$string$8", "newline"], "postprocess": e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'public'})},
     {"name": "type_declr$string$1", "symbols": [{"literal":"t"}, {"literal":"y"}, {"literal":"p"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "type_declr$string$2", "symbols": [{"literal":"e"}, {"literal":"x"}, {"literal":"t"}, {"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"s"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "type_declr", "symbols": ["type_declr$string$1", "__", "type", "__", "type_declr$string$2", "__", "type", "newline"], "postprocess": e().flat().reorder(2, 6, 7).kind('type').commentable()},
+    {"name": "library_block$ebnf$1", "symbols": ["_library_initializer"], "postprocess": id},
+    {"name": "library_block$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "library_block$ebnf$2", "symbols": ["_library_requires"], "postprocess": id},
+    {"name": "library_block$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "library_block$ebnf$3", "symbols": []},
+    {"name": "library_block$ebnf$3", "symbols": ["library_block$ebnf$3", "program_blocks"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "library_block", "symbols": ["_library_start", "__", "name", "library_block$ebnf$1", "library_block$ebnf$2", "newline", "library_block$ebnf$3", "_", "_library_end", "newline"], "postprocess": e().reorder(2, 3, 4, 5, 6, 9).kind("library")},
+    {"name": "_library_start$string$1", "symbols": [{"literal":"l"}, {"literal":"i"}, {"literal":"b"}, {"literal":"r"}, {"literal":"a"}, {"literal":"r"}, {"literal":"y"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_start", "symbols": ["_library_start$string$1"]},
+    {"name": "_library_start$string$2", "symbols": [{"literal":"s"}, {"literal":"c"}, {"literal":"o"}, {"literal":"p"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_start", "symbols": ["_library_start$string$2"]},
+    {"name": "_library_end$string$1", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"l"}, {"literal":"i"}, {"literal":"b"}, {"literal":"r"}, {"literal":"a"}, {"literal":"r"}, {"literal":"y"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_end", "symbols": ["_library_end$string$1"]},
+    {"name": "_library_end$string$2", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"s"}, {"literal":"c"}, {"literal":"o"}, {"literal":"p"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_end", "symbols": ["_library_end$string$2"]},
+    {"name": "_library_initializer$string$1", "symbols": [{"literal":"i"}, {"literal":"n"}, {"literal":"i"}, {"literal":"t"}, {"literal":"i"}, {"literal":"a"}, {"literal":"l"}, {"literal":"i"}, {"literal":"z"}, {"literal":"e"}, {"literal":"r"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_initializer", "symbols": ["__", "_library_initializer$string$1", "__", "name"], "postprocess": e().reorder(3).first()},
+    {"name": "_library_requires$string$1", "symbols": [{"literal":"r"}, {"literal":"e"}, {"literal":"q"}, {"literal":"u"}, {"literal":"i"}, {"literal":"r"}, {"literal":"e"}, {"literal":"s"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "_library_requires", "symbols": ["__", "_library_requires$string$1", "__", "library_list"], "postprocess": e().reorder(3).first()},
+    {"name": "library_list$ebnf$1", "symbols": []},
+    {"name": "library_list$ebnf$1$subexpression$1$ebnf$1$subexpression$1$string$1", "symbols": [{"literal":"o"}, {"literal":"p"}, {"literal":"t"}, {"literal":"i"}, {"literal":"o"}, {"literal":"n"}, {"literal":"a"}, {"literal":"l"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "library_list$ebnf$1$subexpression$1$ebnf$1$subexpression$1", "symbols": ["library_list$ebnf$1$subexpression$1$ebnf$1$subexpression$1$string$1", "__"]},
+    {"name": "library_list$ebnf$1$subexpression$1$ebnf$1", "symbols": ["library_list$ebnf$1$subexpression$1$ebnf$1$subexpression$1"], "postprocess": id},
+    {"name": "library_list$ebnf$1$subexpression$1$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "library_list$ebnf$1$subexpression$1", "symbols": ["_", {"literal":","}, "_", "library_list$ebnf$1$subexpression$1$ebnf$1", "name"]},
+    {"name": "library_list$ebnf$1", "symbols": ["library_list$ebnf$1", "library_list$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "library_list", "symbols": ["name", "library_list$ebnf$1"], "postprocess": e().fn(([first, others]) => [e().kind("requirement")([first]), ...others.map(e().reorder(4, 3).kind("requirement"))])},
     {"name": "var_declr$ebnf$1$subexpression$1", "symbols": ["_", {"literal":"="}, "_", "expr"]},
     {"name": "var_declr$ebnf$1", "symbols": ["var_declr$ebnf$1$subexpression$1"], "postprocess": id},
     {"name": "var_declr$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "var_declr", "symbols": ["type", "__", "name", "var_declr$ebnf$1"], "postprocess": e().flat().reorder(0, 2, 6).kind('var')},
+    {"name": "var_declr$subexpression$1$string$1", "symbols": [{"literal":"c"}, {"literal":"o"}, {"literal":"n"}, {"literal":"s"}, {"literal":"t"}, {"literal":"a"}, {"literal":"n"}, {"literal":"t"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "var_declr$subexpression$1", "symbols": ["var_declr$subexpression$1$string$1", "__"]},
+    {"name": "var_declr$ebnf$2$subexpression$1", "symbols": ["_", {"literal":"="}, "_", "expr"]},
+    {"name": "var_declr$ebnf$2", "symbols": ["var_declr$ebnf$2$subexpression$1"], "postprocess": id},
+    {"name": "var_declr$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "var_declr", "symbols": ["var_declr$subexpression$1", "type", "__", "name", "var_declr$ebnf$2"], "postprocess": e().flat().reorder(2, 4, 8).kind('var').assign({constant: true})},
     {"name": "var_declr$string$1", "symbols": [{"literal":"a"}, {"literal":"r"}, {"literal":"r"}, {"literal":"a"}, {"literal":"y"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "var_declr", "symbols": ["type", "__", "var_declr$string$1", "__", "name"], "postprocess": e().flat().reorder(0, 4).kind('var').assign({array: true})},
     {"name": "param", "symbols": ["type", "__", "name"], "postprocess": e().flat().reorder(0, 2).kind('param')},
     {"name": "local$string$1", "symbols": [{"literal":"l"}, {"literal":"o"}, {"literal":"c"}, {"literal":"a"}, {"literal":"l"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "local", "symbols": ["local$string$1", "__", "var_declr"], "postprocess": e().flat().index(2)},
+    {"name": "local", "symbols": ["local$string$1", "__", "var_declr"], "postprocess": e().flat().index(2).assign({access: 'local'})},
     {"name": "statements$ebnf$1", "symbols": ["_statement"]},
     {"name": "statements$ebnf$1", "symbols": ["statements$ebnf$1", "_statement"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "statements", "symbols": ["statements$ebnf$1"], "postprocess": e().flat().kind('statements')},
@@ -176,6 +263,7 @@ let ParserRules = [
     {"name": "__statement", "symbols": ["set"]},
     {"name": "__statement", "symbols": ["call"]},
     {"name": "__statement", "symbols": ["ifthenelse"]},
+    {"name": "__statement", "symbols": ["staticif"]},
     {"name": "__statement", "symbols": ["loop"]},
     {"name": "__statement", "symbols": ["exitwhen"]},
     {"name": "__statement", "symbols": ["return"]},
@@ -201,6 +289,14 @@ let ParserRules = [
     {"name": "ifthenelse$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "ifthenelse$string$3", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"i"}, {"literal":"f"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "ifthenelse", "symbols": ["ifthenelse$string$1", "_", "expr", "_", "ifthenelse$string$2", "newline", "ifthenelse$ebnf$1", "ifthenelse$ebnf$2", "_", "ifthenelse$string$3"], "postprocess": e().flat().reorder(2, 5, 6, 7).pick(1, 1, 1, e().fn(v => v && v.data)).kind('ifthenelse')},
+    {"name": "staticif$string$1", "symbols": [{"literal":"s"}, {"literal":"t"}, {"literal":"a"}, {"literal":"t"}, {"literal":"i"}, {"literal":"c"}, {"literal":" "}, {"literal":"i"}, {"literal":"f"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "staticif$string$2", "symbols": [{"literal":"t"}, {"literal":"h"}, {"literal":"e"}, {"literal":"n"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "staticif$ebnf$1", "symbols": ["statements"], "postprocess": id},
+    {"name": "staticif$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "staticif$ebnf$2", "symbols": ["else_clauses"], "postprocess": id},
+    {"name": "staticif$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "staticif$string$3", "symbols": [{"literal":"e"}, {"literal":"n"}, {"literal":"d"}, {"literal":"i"}, {"literal":"f"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "staticif", "symbols": ["staticif$string$1", "_", "expr", "_", "staticif$string$2", "newline", "staticif$ebnf$1", "staticif$ebnf$2", "_", "staticif$string$3"], "postprocess": e().flat().reorder(2, 5, 6, 7).pick(1, 1, 1, e().fn(v => v && v.data)).kind('ifthenelse')},
     {"name": "else_clauses$ebnf$1$subexpression$1", "symbols": ["_", "else_clause"]},
     {"name": "else_clauses$ebnf$1", "symbols": ["else_clauses$ebnf$1$subexpression$1"]},
     {"name": "else_clauses$ebnf$1$subexpression$2", "symbols": ["_", "else_clause"]},
@@ -230,7 +326,7 @@ let ParserRules = [
     {"name": "debug$string$1", "symbols": [{"literal":"d"}, {"literal":"e"}, {"literal":"b"}, {"literal":"u"}, {"literal":"g"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "debug", "symbols": ["debug$string$1", "_", "__statement"], "postprocess": e().flat().reorder(2).kind('debug')},
     {"name": "expr", "symbols": ["logical_op"]},
-    {"name": "_expr", "symbols": ["name"], "postprocess": e().kind('name')},
+    {"name": "_expr", "symbols": ["name"]},
     {"name": "_expr", "symbols": ["const"]},
     {"name": "_expr", "symbols": ["func_call"]},
     {"name": "_expr", "symbols": ["parens"]},
@@ -273,7 +369,7 @@ let ParserRules = [
     {"name": "hex$ebnf$2", "symbols": [/[0-9a-fA-F]/]},
     {"name": "hex$ebnf$2", "symbols": ["hex$ebnf$2", /[0-9a-fA-F]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "hex", "symbols": [{"literal":"0"}, /[xX]/, "hex$ebnf$2"], "postprocess": string.fn(v => parseInt(v.slice(2), 16))},
-    {"name": "fourcc", "symbols": [{"literal":"'"}, /./, /./, /./, /./, {"literal":"'"}], "postprocess": string.fn(v => v.slice(1, -1)).kind('fourcc')},
+    {"name": "fourcc", "symbols": [{"literal":"'"}, /./, /./, /./, /./, {"literal":"'"}], "postprocess": string.fn(v => [v.slice(1, -1)]).kind('fourcc')},
     {"name": "real_const$ebnf$1", "symbols": [/[0-9]/]},
     {"name": "real_const$ebnf$1", "symbols": ["real_const$ebnf$1", /[0-9]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "real_const$ebnf$2", "symbols": []},
@@ -485,7 +581,7 @@ let ParserRules = [
     {"name": "newline", "symbols": ["_", "comment"], "postprocess": ([whitespace, comment]) => comment || null},
     {"name": "emptyline", "symbols": ["_", {"literal":"\n"}], "postprocess": e().index(1).kind('emptyline')},
     {"name": "emptyline", "symbols": ["_", "comment"], "postprocess": e().index(1)},
-    {"name": "type", "symbols": ["name"]},
+    {"name": "type", "symbols": ["name"], "postprocess": e().first()},
     {"name": "type$string$1", "symbols": [{"literal":"c"}, {"literal":"o"}, {"literal":"d"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "type", "symbols": ["type$string$1"]},
     {"name": "type$string$2", "symbols": [{"literal":"h"}, {"literal":"a"}, {"literal":"n"}, {"literal":"d"}, {"literal":"l"}, {"literal":"e"}], "postprocess": function joiner(d) {return d.join('');}},
@@ -506,7 +602,7 @@ let ParserRules = [
     {"name": "name", "symbols": [/[a-zA-Z]/, "name$ebnf$1"], "postprocess": ( result, _, reject ) => {
             result = string( result );
             if ( keywords.includes( result ) ) return reject;
-            return result;
+            return new classes.name([result]);
         } },
     {"name": "_$ebnf$1", "symbols": ["__"], "postprocess": id},
     {"name": "_$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
@@ -514,24 +610,24 @@ let ParserRules = [
     {"name": "__$ebnf$1", "symbols": [/[ \t]/]},
     {"name": "__$ebnf$1", "symbols": ["__$ebnf$1", /[ \t]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "__", "symbols": ["__$ebnf$1"], "postprocess": string},
+    {"name": "__$string$1", "symbols": [{"literal":"/"}, {"literal":"*"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "__$ebnf$2", "symbols": []},
+    {"name": "__$ebnf$2", "symbols": ["__$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "__$ebnf$3", "symbols": []},
+    {"name": "__$ebnf$3$subexpression$1$ebnf$1", "symbols": [{"literal":"*"}]},
+    {"name": "__$ebnf$3$subexpression$1$ebnf$1", "symbols": ["__$ebnf$3$subexpression$1$ebnf$1", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "__$ebnf$3$subexpression$1$ebnf$2", "symbols": []},
+    {"name": "__$ebnf$3$subexpression$1$ebnf$2", "symbols": ["__$ebnf$3$subexpression$1$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "__$ebnf$3$subexpression$1", "symbols": ["__$ebnf$3$subexpression$1$ebnf$1", /[^/*]/, "__$ebnf$3$subexpression$1$ebnf$2"]},
+    {"name": "__$ebnf$3", "symbols": ["__$ebnf$3", "__$ebnf$3$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "__$ebnf$4", "symbols": []},
+    {"name": "__$ebnf$4", "symbols": ["__$ebnf$4", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "__$string$2", "symbols": [{"literal":"*"}, {"literal":"/"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "__", "symbols": ["_", "__$string$1", "__$ebnf$2", "__$ebnf$3", "__$ebnf$4", "__$string$2", "_"], "postprocess": string.fn(c => [c.slice(c.indexOf("/*")+2, c.lastIndexOf("*/"))]).kind("comment").fn(c => program.comments.push(c))},
     {"name": "comment$string$1", "symbols": [{"literal":"/"}, {"literal":"/"}], "postprocess": function joiner(d) {return d.join('');}},
     {"name": "comment$ebnf$1", "symbols": []},
     {"name": "comment$ebnf$1", "symbols": ["comment$ebnf$1", /[^\n]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment", "symbols": ["comment$string$1", "comment$ebnf$1", {"literal":"\n"}], "postprocess": string.fn(s => [s.slice(2, -1)]).kind('comment')},
-    {"name": "comment$string$2", "symbols": [{"literal":"/"}, {"literal":"*"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "comment$ebnf$2", "symbols": []},
-    {"name": "comment$ebnf$2", "symbols": ["comment$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment$ebnf$3", "symbols": []},
-    {"name": "comment$ebnf$3$subexpression$1$ebnf$1", "symbols": [{"literal":"*"}]},
-    {"name": "comment$ebnf$3$subexpression$1$ebnf$1", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$1", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment$ebnf$3$subexpression$1$ebnf$2", "symbols": []},
-    {"name": "comment$ebnf$3$subexpression$1$ebnf$2", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$2", /[^*]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment$ebnf$3$subexpression$1", "symbols": ["comment$ebnf$3$subexpression$1$ebnf$1", /[^/*]/, "comment$ebnf$3$subexpression$1$ebnf$2"]},
-    {"name": "comment$ebnf$3", "symbols": ["comment$ebnf$3", "comment$ebnf$3$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment$ebnf$4", "symbols": []},
-    {"name": "comment$ebnf$4", "symbols": ["comment$ebnf$4", {"literal":"*"}], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment$string$3", "symbols": [{"literal":"*"}, {"literal":"/"}], "postprocess": function joiner(d) {return d.join('');}},
-    {"name": "comment", "symbols": ["comment$string$2", "comment$ebnf$2", "comment$ebnf$3", "comment$ebnf$4", "comment$string$3"], "postprocess": e().flat().join().fn(s => s.slice(2, -2)).kind("comment")}
+    {"name": "comment", "symbols": ["comment$string$1", "comment$ebnf$1", {"literal":"\n"}], "postprocess": string.fn(s => [s.slice(2, -1)]).kind('comment')}
 ];
 let ParserStart = "program";
 export default { Lexer, ParserRules, ParserStart };

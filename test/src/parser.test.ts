@@ -1,154 +1,78 @@
+import { parseSnapshot } from "../util";
 
-import { expectParse, trim } from "../util";
-import parser from "../../src/parser";
-import { inspect } from "util";
-
-describe( "parser", () => {
-
-	describe( "globals", () => {
-
-		it( "empty globals block", () => expectParse( `
+describe("globals", () => {
+	it(
+		"empty globals block",
+		parseSnapshot(`
 			globals
 			endglobals
-			`, `
-			Program [
-				Globals {}
-			]
-		` ) );
+		`),
+	);
 
-		it( "commented", () => expectParse( `
+	it(
+		"commented",
+		parseSnapshot(`
 			globals //foo
 			//bar
 			endglobals //baz
-		`, `
-			Program [
-				Globals {
-					comment: Comment "foo"
-					globals: Statements [
-						Comment "bar"
-					]
-					endComment: Comment "baz"
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "with globals", () => expectParse( `
+	it(
+		"with globals",
+		parseSnapshot(`
 			globals
 				constant force sheep = CreateForce()
 				real salesTax = 1.5
 				real specialTax = salesTax
 			endglobals
-		`, `
-			Program [
-				Globals {
-					globals: Statements [
-						Variable {
-							type: String "force"
-							name: String "sheep"
-							value: Call {
-								name: String "CreateForce"
-							}
-							constant: Boolean true
-						}
-						Variable {
-							type: String "real"
-							name: String "salesTax"
-							value: Number 1.5
-						}
-						Variable {
-							type: String "real"
-							name: String "specialTax"
-							value: Name "salesTax"
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-	} );
+	it(
+		"self-referencing globals",
+		parseSnapshot(`
+			globals
+				constant real bj_PI = 3.14159
+				constant real bj_RADTODEG = 180.0 / bj_PI
+			endglobals
+		`),
+	);
+});
 
-	it( "natives", () => expectParse( `
+it(
+	"natives",
+	parseSnapshot(`
 		native FuncName takes argType1 argName1, argType2 argName2 returns returnType //with comments
 		constant native foo takes nothing returns nothing
-	`, `
-		Program [
-			Native {
-				name: String "FuncName"
-				params: Params [
-					Param {
-						type: String "argType1"
-						name: String "argName1"
-					}
-					Param {
-						type: String "argType2"
-						name: String "argName2"
-					}
-				]
-				returns: String "returnType"
-				comment: Comment "with comments"
-			}
-			Native {
-				name: String "foo"
-				constant: Boolean true
-			}
-		]
-	` ) );
+	`),
+);
 
-	describe( "functions", () => {
-
-		it( "comments", () => expectParse( `
-			function funcName takes argType1 argName1, argType2 argName2 returns returnType //function-comment
-
+describe("functions", () => {
+	it(
+		"comments",
+		parseSnapshot(`
+			function funcName takes nothing returns nothing //function-comment
 				//internal-comment
-
 			endfunction //endfunction-comment
-		`, `
-			Program [
-				JASSFunction {
-					name: String "funcName"
-					params: Params [
-						Param {
-							type: String "argType1"
-							name: String "argName1"
-						}
-						Param {
-							type: String "argType2"
-							name: String "argName2"
-						}
-					]
-					returns: String "returnType"
-					comment: Comment "function-comment"
-					statements: Statements [
-						EmptyLine {}
-						Comment "internal-comment"
-						EmptyLine {}
-					]
-					endComment: Comment "endfunction-comment"
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "multiple functions", () => expectParse( `
+	it(
+		"multiple functions",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 			endfunction
 
 			function bar takes nothing returns nothing
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-				}
-				EmptyLine {}
-				JASSFunction {
-					name: String "bar"
-				}
-			]
-		` ) );
+		`),
+	);
 
-		describe( "locals", () => {
-
-			it( "can define locals", () => expectParse( `
+	describe("locals", () => {
+		it(
+			"can define locals",
+			parseSnapshot(`
 				function foo takes nothing returns nothing
 					local varType1 varName1
 
@@ -168,168 +92,47 @@ describe( "parser", () => {
 					local varType11 varName11 = (1 + 2)
 					local varType12 varName12 = varName11
 				endfunction
-			`, `
-				Program [
-					JASSFunction {
-						name: String "foo"
-						statements: Statements [
-							Variable {
-								type: String "varType1"
-								name: String "varName1"
-							}
-							EmptyLine {}
-							Variable {
-								type: String "varType2"
-								name: String "varName2"
-								value: String "string with \\\\\\"quotes\\\\\\""
-							}
-							Variable {
-								type: String "varType3"
-								name: String "varName3"
-								value: FourCC "abcd"
-							}
-							EmptyLine {}
-							Variable {
-								type: String "varType4"
-								name: String "varName4"
-								value: Number 0
-							}
-							Variable {
-								type: String "varType5"
-								name: String "varName5"
-								value: Number 8
-							}
-							Variable {
-								type: String "varType6"
-								name: String "varName6"
-								value: Number 16
-							}
-							Variable {
-								type: String "varType7"
-								name: String "varName7"
-								value: Number 16
-							}
-							EmptyLine {}
-							Variable {
-								type: String "varType8"
-								name: String "varName8"
-								value: Number 0.1
-							}
-							EmptyLine {}
-							Variable {
-								type: String "varType9"
-								name: String "varName9"
-								value: Boolean true
-							}
-							Variable {
-								type: String "varType10"
-								name: String "varName10"
-								value: Boolean false
-							}
-							EmptyLine {}
-							Variable {
-								type: String "varType11"
-								name: String "varName11"
-								value: Parens BinaryOp {
-									left: Number 1
-									operator: String "+"
-									right: Number 2
-								}
-							}
-							Variable {
-								type: String "varType12"
-								name: String "varName12"
-								value: Name "varName11"
-							}
-						]
-					}
-				]
-			` ) );
+			`),
+		);
+	});
 
-		} );
-
-		describe( "calls", () => {
-
-			it( "with lots of parens", () => expectParse( `
+	describe("calls", () => {
+		it(
+			"with lots of parens",
+			parseSnapshot(`
 				function foo takes nothing returns nothing
 					call SaveStr(A,(((B[i]))),(-xG),(oG))
 				endfunction
-			`, `
-				Program [
-					JASSFunction {
-						name: String "foo"
-						statements: Statements [
-							Call {
-								name: String "SaveStr"
-								args: Args [
-									Name "A"
-									Parens Parens Parens ArrayRef {
-										name: String "B"
-										prop: Name "i"
-									}
-									Parens UnaryOp {
-										operator: String "-"
-										expr: Name "xG"
-									}
-									Parens Name "oG"
-								]
-								statement: Boolean true
-							}
-						]
-					}
-				]
-			` ) );
+			`),
+		);
+	});
+});
 
-		} );
-
-	} );
-
-	describe( "if-then-else", () => {
-
-		it( "empty", () => expectParse( `
+describe("if-then-else", () => {
+	it(
+		"empty",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 				if true then
 				endif
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-					statements: Statements [
-						IfThenElse {
-							condition: Boolean true
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "simple", () => expectParse( `
+	it(
+		"simple",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
 				endif
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-					statements: Statements [
-						IfThenElse {
-							condition: Boolean true
-							then: Statements [
-								JASSSet {
-									name: String "bar"
-									value: Name "buz"
-								}
-							]
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "else", () => expectParse( `
+	it(
+		"else",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -337,36 +140,12 @@ describe( "parser", () => {
 					set bar = qux
 				endif
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-					statements: Statements [
-						IfThenElse {
-							condition: Boolean true
-							then: Statements [
-								JASSSet {
-									name: String "bar"
-									value: Name "buz"
-								}
-							]
-							elses: Array [
-								Else {
-									statements: Statements [
-										JASSSet {
-											name: String "bar"
-											value: Name "qux"
-										}
-									]
-								}
-							]
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "elseif", () => expectParse( `
+	it(
+		"elseif",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -374,37 +153,12 @@ describe( "parser", () => {
 					set bar = qux
 				endif
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-					statements: Statements [
-						IfThenElse {
-							condition: Boolean true
-							then: Statements [
-								JASSSet {
-									name: String "bar"
-									value: Name "buz"
-								}
-							]
-							elses: Array [
-								ElseIf {
-									condition: Boolean false
-									statements: Statements [
-										JASSSet {
-											name: String "bar"
-											value: Name "qux"
-										}
-									]
-								}
-							]
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-		it( "elseif with else", () => expectParse( `
+	it(
+		"elseif with else",
+		parseSnapshot(`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -414,162 +168,83 @@ describe( "parser", () => {
 					set bar = thud
 				endif
 			endfunction
-		`, `
-			Program [
-				JASSFunction {
-					name: String "foo"
-					statements: Statements [
-						IfThenElse {
-							condition: Boolean true
-							then: Statements [
-								JASSSet {
-									name: String "bar"
-									value: Name "buz"
-								}
-							]
-							elses: Array [
-								ElseIf {
-									condition: Boolean false
-									statements: Statements [
-										JASSSet {
-											name: String "bar"
-											value: Name "qux"
-										}
-									]
-								}
-								Else {
-									statements: Statements [
-										JASSSet {
-											name: String "bar"
-											value: Name "thud"
-										}
-									]
-								}
-							]
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
 
-	} );
+	it(
+		"static if",
+		parseSnapshot(`
+			function foo takes nothing returns nothing
+				static if true then
+					// works
+				endif
+			endfunction
+		`),
+	);
+});
 
-	describe( "edge cases", () => {
-
-		it( "multiple left expressions", () => expectParse( `
+describe("edge cases", () => {
+	it(
+		"multiple left expressions",
+		parseSnapshot(`
 			globals
 				boolean test = a==b[c]or d==e[f]or g==h[i]or j
 			endglobals
-		`, `
-			Program [
-				Globals {
-					globals: Statements [
-						Variable {
-							type: String "boolean"
-							name: String "test"
-							value: BinaryOp {
-								left: BinaryOp {
-									left: BinaryOp {
-										left: BinaryOp {
-											left: Name "a"
-											operator: String "=="
-											right: ArrayRef {
-												name: String "b"
-												prop: Name "c"
-											}
-										}
-										operator: String "or"
-										right: BinaryOp {
-											left: Name "d"
-											operator: String "=="
-											right: ArrayRef {
-												name: String "e"
-												prop: Name "f"
-											}
-										}
-									}
-									operator: String "or"
-									right: BinaryOp {
-										left: Name "g"
-										operator: String "=="
-										right: ArrayRef {
-											name: String "h"
-											prop: Name "i"
-										}
-									}
-								}
-								operator: String "or"
-								right: Name "j"
-							}
-						}
-					]
-				}
-			]
-		` ) );
+		`),
+	);
+});
 
-	} );
-
-	describe( "types", () => {
-
-		it( "works", () => expectParse( `
+describe("types", () => {
+	it(
+		"works",
+		parseSnapshot(`
 			type a extends handle
-			  type   c    extends    d   //with comment
-		`, `
-			Program [
-				Type {
-					base: String "a"
-					super: String "handle"
-				}
-				Type {
-					base: String "c"
-					super: String "d"
-					comment: Comment "with comment"
-				}
-			]
-		` ) );
+				type   c    extends    d   //with comment
+		`),
+	);
+});
 
-	} );
+it(
+	"chars",
+	parseSnapshot(`
+		function a takes nothing returns nothing
+			local integer i = 'a'
+		endfunction
+	`),
+);
 
-	it( "chars", () => {
+it(
+	"debug",
+	parseSnapshot(`
+		function a takes nothing returns nothing
+			debug local integer i = 'a'
+		endfunction
+	`),
+);
 
-		expect( parser( trim( `
-			function a takes nothing returns nothing
-				local integer i = 'a'
-			endfunction
-		` ) ) ).toMatchSnapshot();
+describe("comments", () => {
+	it(
+		"multiline",
+		parseSnapshot(`
+			/* multi
+			line
+			comments */
+		`),
+	);
 
-	} );
+	it(
+		"single line",
+		parseSnapshot(`
+			// single line comment
+		`),
+	);
+});
 
-	it( "debug", () => {
-
-		expect( parser( trim( `
-			function a takes nothing returns nothing
-				debug local integer i = 'a'
-			endfunction
-		` ) ) ).toMatchSnapshot();
-
-	} );
-
-	describe( "comments", () => {
-
-		it( "multiline", () => {
-
-			expect( inspect( parser( `
-				/* multi
-				line
-				comments */
-			` ) ) ).toMatchSnapshot();
-
-		} );
-
-		it( "single line", () => {
-
-			expect( inspect( parser( `
-				// single line comment
-			` ) ) ).toMatchSnapshot();
-
-		} );
-
-	} );
-
-} );
+it(
+	"nulls",
+	parseSnapshot(`
+	function a takes nothing returns boolean
+		return null==null
+	endfunction
+`),
+);

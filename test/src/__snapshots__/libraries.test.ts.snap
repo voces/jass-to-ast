@@ -1,0 +1,338 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`comments 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        Comment {
+          "value": " bar",
+        },
+      ],
+      "comment": Comment {
+        "value": " foo",
+      },
+      "endComment": Comment {
+        "value": " baz",
+      },
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions general 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        JASSFunction {
+          "access": "global",
+          "name": Name {
+            "value": "Bfun",
+          },
+          "returns": "integer",
+          "statements": Statements {
+            "body": Array [
+              Variable {
+                "access": "local",
+                "name": Name {
+                  "value": "i",
+                },
+                "type": "integer",
+                "value": 0,
+              },
+              JASSSet {
+                "name": Name {
+                  "value": "i",
+                },
+                "value": BinaryOp {
+                  "left": Name {
+                    "value": "i",
+                  },
+                  "operator": "+",
+                  "right": 1,
+                },
+              },
+              Return {
+                "data": Array [
+                  Name {
+                    "value": "i",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      "name": Name {
+        "value": "B",
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions scoped 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        JASSFunction {
+          "access": "global",
+          "name": Name {
+            "value": "GlobalFunc",
+          },
+          "returns": "integer",
+        },
+        EmptyLine {},
+        JASSFunction {
+          "access": "private",
+          "name": Name {
+            "value": "PrivFunc",
+          },
+          "returns": "integer",
+        },
+        EmptyLine {},
+        JASSFunction {
+          "access": "public",
+          "name": Name {
+            "value": "PubFunc",
+          },
+          "returns": "integer",
+        },
+      ],
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`globals scoped 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        Globals {
+          "globals": Statements {
+            "body": Array [
+              Variable {
+                "access": "global",
+                "name": Name {
+                  "value": "globalInt",
+                },
+                "type": "integer",
+              },
+              Variable {
+                "access": "private",
+                "name": Name {
+                  "value": "privInt",
+                },
+                "type": "integer",
+              },
+              Variable {
+                "access": "public",
+                "name": Name {
+                  "value": "pubInt",
+                },
+                "type": "integer",
+              },
+              Variable {
+                "access": "private",
+                "constant": true,
+                "name": Name {
+                  "value": "privConstInt",
+                },
+                "type": "integer",
+              },
+            ],
+          },
+        },
+      ],
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`globals simple 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        EmptyLine {},
+        Globals {
+          "globals": Statements {
+            "body": Array [
+              Variable {
+                "access": "global",
+                "name": Name {
+                  "value": "cache",
+                },
+                "type": Name {
+                  "value": "gamecache",
+                },
+              },
+            ],
+          },
+        },
+        EmptyLine {},
+      ],
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`initializer 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        JASSFunction {
+          "access": "global",
+          "name": Name {
+            "value": "Init",
+          },
+          "returns": "integer",
+        },
+      ],
+      "initializer": Name {
+        "value": "Init",
+      },
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`requires none 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [],
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`requires one 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [],
+      "name": Name {
+        "value": "B",
+      },
+      "requires": Array [
+        Requirement {
+          "name": Name {
+            "value": "A",
+          },
+          "optional": false,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`requires optionals 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [],
+      "name": Name {
+        "value": "E",
+      },
+      "requires": Array [
+        Requirement {
+          "name": Name {
+            "value": "A",
+          },
+          "optional": false,
+        },
+        Requirement {
+          "name": Name {
+            "value": "B",
+          },
+          "optional": true,
+        },
+        Requirement {
+          "name": Name {
+            "value": "C",
+          },
+          "optional": true,
+        },
+        Requirement {
+          "name": Name {
+            "value": "D",
+          },
+          "optional": false,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`requires two 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [],
+      "name": Name {
+        "value": "C",
+      },
+      "requires": Array [
+        Requirement {
+          "name": Name {
+            "value": "A",
+          },
+          "optional": false,
+        },
+        Requirement {
+          "name": Name {
+            "value": "B",
+          },
+          "optional": false,
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`scopes 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        JASSFunction {
+          "access": "private",
+          "name": Name {
+            "value": "Init",
+          },
+          "returns": "integer",
+        },
+      ],
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "esModuleInterop": true,
-      "target": "es6",
+      "target": "ES2020",
       "noImplicitAny": true,
       "moduleResolution": "node",
       "sourceMap": false,
@@ -16,7 +16,7 @@
       "strictNullChecks": true,
       "strictFunctionTypes": true,
       // "strictBindCallApply": true,
-      "lib": [ "es6", "dom" ],
+      "lib": [ "ES2020", "dom" ],
       "allowJs": true
     },
     "include": [ "src" ],

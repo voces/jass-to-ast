@@ -1,50 +1,856 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`parser chars 1`] = `
-Program [
-  JASSFunction {
-    "name": "a",
-    "statements": Statements [
-      Variable {
-        "name": "i",
-        "type": "integer",
-        "value": 97,
+exports[`chars 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "a",
       },
-    ],
-  },
-]
-`;
-
-exports[`parser comments multiline 1`] = `
-"Program [
-  EmptyLine {},
-  [String (Comment): ' multi\\\\n\\\\t\\\\t\\\\t\\\\tline\\\\n\\\\t\\\\t\\\\t\\\\tcomments '],
-  EmptyLine {},
-  EmptyLine {}
-]"
-`;
-
-exports[`parser comments single line 1`] = `
-"Program [
-  EmptyLine {},
-  [String (Comment): ' single line comment'],
-  EmptyLine {}
-]"
-`;
-
-exports[`parser debug 1`] = `
-Program [
-  JASSFunction {
-    "name": "a",
-    "statements": Statements [
-      Debug {
-        "statement": Variable {
-          "name": "i",
-          "type": "integer",
-          "value": 97,
-        },
+      "statements": Statements {
+        "body": Array [
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "i",
+            },
+            "type": "integer",
+            "value": 97,
+          },
+        ],
       },
-    ],
-  },
-]
+    },
+  ],
+}
+`;
+
+exports[`comments multiline 1`] = `
+Program {
+  "body": Array [
+    EmptyLine {},
+  ],
+}
+`;
+
+exports[`comments single line 1`] = `
+Program {
+  "body": Array [
+    Comment {
+      "value": " single line comment",
+    },
+  ],
+}
+`;
+
+exports[`debug 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "a",
+      },
+      "statements": Statements {
+        "body": Array [
+          Debug {
+            "statement": Variable {
+              "access": "local",
+              "name": Name {
+                "value": "i",
+              },
+              "type": "integer",
+              "value": 97,
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`edge cases multiple left expressions 1`] = `
+Program {
+  "body": Array [
+    Globals {
+      "globals": Statements {
+        "body": Array [
+          Variable {
+            "access": "global",
+            "name": Name {
+              "value": "test",
+            },
+            "type": "boolean",
+            "value": BinaryOp {
+              "left": BinaryOp {
+                "left": BinaryOp {
+                  "left": BinaryOp {
+                    "left": Name {
+                      "value": "a",
+                    },
+                    "operator": "==",
+                    "right": ArrayRef {
+                      "name": Name {
+                        "value": "b",
+                      },
+                      "prop": Name {
+                        "value": "c",
+                      },
+                    },
+                  },
+                  "operator": "or",
+                  "right": BinaryOp {
+                    "left": Name {
+                      "value": "d",
+                    },
+                    "operator": "==",
+                    "right": ArrayRef {
+                      "name": Name {
+                        "value": "e",
+                      },
+                      "prop": Name {
+                        "value": "f",
+                      },
+                    },
+                  },
+                },
+                "operator": "or",
+                "right": BinaryOp {
+                  "left": Name {
+                    "value": "g",
+                  },
+                  "operator": "==",
+                  "right": ArrayRef {
+                    "name": Name {
+                      "value": "h",
+                    },
+                    "prop": Name {
+                      "value": "i",
+                    },
+                  },
+                },
+              },
+              "operator": "or",
+              "right": Name {
+                "value": "j",
+              },
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions calls with lots of parens 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          Call {
+            "args": Args {
+              "body": Array [
+                Name {
+                  "value": "A",
+                },
+                Parens {
+                  "data": Array [
+                    Parens {
+                      "data": Array [
+                        Parens {
+                          "data": Array [
+                            ArrayRef {
+                              "name": Name {
+                                "value": "B",
+                              },
+                              "prop": Name {
+                                "value": "i",
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                Parens {
+                  "data": Array [
+                    UnaryOp {
+                      "expr": Name {
+                        "value": "xG",
+                      },
+                      "operator": "-",
+                    },
+                  ],
+                },
+                Parens {
+                  "data": Array [
+                    Name {
+                      "value": "oG",
+                    },
+                  ],
+                },
+              ],
+            },
+            "name": Name {
+              "value": "SaveStr",
+            },
+            "statement": true,
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions comments 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "comment": Comment {
+        "value": "function-comment",
+      },
+      "endComment": Comment {
+        "value": "endfunction-comment",
+      },
+      "name": Name {
+        "value": "funcName",
+      },
+      "statements": Statements {
+        "body": Array [
+          Comment {
+            "value": "internal-comment",
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions locals can define locals 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName1",
+            },
+            "type": Name {
+              "value": "varType1",
+            },
+          },
+          EmptyLine {},
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName2",
+            },
+            "type": Name {
+              "value": "varType2",
+            },
+            "value": "string with \\\\\\"quotes\\\\\\"",
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName3",
+            },
+            "type": Name {
+              "value": "varType3",
+            },
+            "value": FourCC {
+              "value": "abcd",
+            },
+          },
+          EmptyLine {},
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName4",
+            },
+            "type": Name {
+              "value": "varType4",
+            },
+            "value": 0,
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName5",
+            },
+            "type": Name {
+              "value": "varType5",
+            },
+            "value": 8,
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName6",
+            },
+            "type": Name {
+              "value": "varType6",
+            },
+            "value": 16,
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName7",
+            },
+            "type": Name {
+              "value": "varType7",
+            },
+            "value": 16,
+          },
+          EmptyLine {},
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName8",
+            },
+            "type": Name {
+              "value": "varType8",
+            },
+            "value": 0.1,
+          },
+          EmptyLine {},
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName9",
+            },
+            "type": Name {
+              "value": "varType9",
+            },
+            "value": true,
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName10",
+            },
+            "type": Name {
+              "value": "varType10",
+            },
+            "value": false,
+          },
+          EmptyLine {},
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName11",
+            },
+            "type": Name {
+              "value": "varType11",
+            },
+            "value": Parens {
+              "data": Array [
+                BinaryOp {
+                  "left": 1,
+                  "operator": "+",
+                  "right": 2,
+                },
+              ],
+            },
+          },
+          Variable {
+            "access": "local",
+            "name": Name {
+              "value": "varName12",
+            },
+            "type": Name {
+              "value": "varType12",
+            },
+            "value": Name {
+              "value": "varName11",
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`functions multiple functions 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+    },
+    EmptyLine {},
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "bar",
+      },
+    },
+  ],
+}
+`;
+
+exports[`globals commented 1`] = `
+Program {
+  "body": Array [
+    Globals {
+      "comment": Comment {
+        "value": "foo",
+      },
+      "endComment": Comment {
+        "value": "baz",
+      },
+      "globals": Statements {
+        "body": Array [
+          Comment {
+            "value": "bar",
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`globals empty globals block 1`] = `
+Program {
+  "body": Array [
+    Globals {},
+  ],
+}
+`;
+
+exports[`globals self-referencing globals 1`] = `
+Program {
+  "body": Array [
+    Globals {
+      "globals": Statements {
+        "body": Array [
+          Variable {
+            "access": "global",
+            "constant": true,
+            "name": Name {
+              "value": "bj_PI",
+            },
+            "type": "real",
+            "value": 3.14159,
+          },
+          Variable {
+            "access": "global",
+            "constant": true,
+            "name": Name {
+              "value": "bj_RADTODEG",
+            },
+            "type": "real",
+            "value": BinaryOp {
+              "left": 180,
+              "operator": "/",
+              "right": Name {
+                "value": "bj_PI",
+              },
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`globals with globals 1`] = `
+Program {
+  "body": Array [
+    Globals {
+      "globals": Statements {
+        "body": Array [
+          Variable {
+            "access": "global",
+            "constant": true,
+            "name": Name {
+              "value": "sheep",
+            },
+            "type": Name {
+              "value": "force",
+            },
+            "value": Call {
+              "name": Name {
+                "value": "CreateForce",
+              },
+            },
+          },
+          Variable {
+            "access": "global",
+            "name": Name {
+              "value": "salesTax",
+            },
+            "type": "real",
+            "value": 1.5,
+          },
+          Variable {
+            "access": "global",
+            "name": Name {
+              "value": "specialTax",
+            },
+            "type": "real",
+            "value": Name {
+              "value": "salesTax",
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else else 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+            "elses": Array [
+              Else {
+                "statements": Statements {
+                  "body": Array [
+                    JASSSet {
+                      "name": Name {
+                        "value": "bar",
+                      },
+                      "value": Name {
+                        "value": "qux",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            "then": Statements {
+              "body": Array [
+                JASSSet {
+                  "name": Name {
+                    "value": "bar",
+                  },
+                  "value": Name {
+                    "value": "buz",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else elseif 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+            "elses": Array [
+              ElseIf {
+                "condition": false,
+                "statements": Statements {
+                  "body": Array [
+                    JASSSet {
+                      "name": Name {
+                        "value": "bar",
+                      },
+                      "value": Name {
+                        "value": "qux",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            "then": Statements {
+              "body": Array [
+                JASSSet {
+                  "name": Name {
+                    "value": "bar",
+                  },
+                  "value": Name {
+                    "value": "buz",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else elseif with else 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+            "elses": Array [
+              ElseIf {
+                "condition": false,
+                "statements": Statements {
+                  "body": Array [
+                    JASSSet {
+                      "name": Name {
+                        "value": "bar",
+                      },
+                      "value": Name {
+                        "value": "qux",
+                      },
+                    },
+                  ],
+                },
+              },
+              Else {
+                "statements": Statements {
+                  "body": Array [
+                    JASSSet {
+                      "name": Name {
+                        "value": "bar",
+                      },
+                      "value": Name {
+                        "value": "thud",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            "then": Statements {
+              "body": Array [
+                JASSSet {
+                  "name": Name {
+                    "value": "bar",
+                  },
+                  "value": Name {
+                    "value": "buz",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else empty 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else simple 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+            "then": Statements {
+              "body": Array [
+                JASSSet {
+                  "name": Name {
+                    "value": "bar",
+                  },
+                  "value": Name {
+                    "value": "buz",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`if-then-else static if 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          IfThenElse {
+            "condition": true,
+            "then": Statements {
+              "body": Array [
+                Comment {
+                  "value": " works",
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`natives 1`] = `
+Program {
+  "body": Array [
+    Native {
+      "comment": Comment {
+        "value": "with comments",
+      },
+      "name": Name {
+        "value": "FuncName",
+      },
+      "params": Params {
+        "body": Array [
+          Param {
+            "name": Name {
+              "value": "argName1",
+            },
+            "type": Name {
+              "value": "argType1",
+            },
+          },
+          Param {
+            "name": Name {
+              "value": "argName2",
+            },
+            "type": Name {
+              "value": "argType2",
+            },
+          },
+        ],
+      },
+      "returns": Name {
+        "value": "returnType",
+      },
+    },
+    Native {
+      "constant": true,
+      "name": Name {
+        "value": "foo",
+      },
+    },
+  ],
+}
+`;
+
+exports[`nulls 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "a",
+      },
+      "returns": "boolean",
+      "statements": Statements {
+        "body": Array [
+          Return {
+            "data": Array [
+              BinaryOp {
+                "operator": "==",
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`types works 1`] = `
+Program {
+  "body": Array [
+    Type {
+      "base": Name {
+        "value": "a",
+      },
+      "super": "handle",
+    },
+    Type {
+      "base": Name {
+        "value": "c",
+      },
+      "comment": Comment {
+        "value": "with comment",
+      },
+      "super": Name {
+        "value": "d",
+      },
+    },
+  ],
+}
 `;
