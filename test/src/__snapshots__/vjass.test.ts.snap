@@ -1,0 +1,270 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`members 1`] = `
+Program {
+  "body": Array [
+    JASSFunction {
+      "access": "global",
+      "name": Name {
+        "value": "foo",
+      },
+      "statements": Statements {
+        "body": Array [
+          Call {
+            "args": Args {
+              "body": Array [
+                Object {
+                  "data": Array [
+                    Name {
+                      "value": "bar",
+                    },
+                    Name {
+                      "value": "baz",
+                    },
+                  ],
+                  "kind": "ref",
+                },
+              ],
+            },
+            "name": Name {
+              "value": "foo",
+            },
+            "statement": true,
+          },
+          Call {
+            "args": Args {
+              "body": Array [
+                ArrayRef {
+                  "name": Object {
+                    "data": Array [
+                      Name {
+                        "value": "bar",
+                      },
+                      Name {
+                        "value": "baz",
+                      },
+                    ],
+                    "kind": "ref",
+                  },
+                  "prop": Object {
+                    "data": Array [
+                      Name {
+                        "value": "foo",
+                      },
+                      Name {
+                        "value": "bar",
+                      },
+                    ],
+                    "kind": "ref",
+                  },
+                },
+              ],
+            },
+            "name": Name {
+              "value": "foo",
+            },
+            "statement": true,
+          },
+          Call {
+            "args": Args {
+              "body": Array [
+                FuncRef {
+                  "data": Object {
+                    "data": Array [
+                      Object {
+                        "data": Array [
+                          Name {
+                            "value": "bar",
+                          },
+                          Name {
+                            "value": "baz",
+                          },
+                        ],
+                        "kind": "ref",
+                      },
+                      Name {
+                        "value": "zig",
+                      },
+                    ],
+                    "kind": "ref",
+                  },
+                },
+              ],
+            },
+            "name": Name {
+              "value": "foo",
+            },
+            "statement": true,
+          },
+          Comment {
+            "value": " call foo.bar()",
+          },
+          JASSSet {
+            "name": Object {
+              "data": Array [
+                Name {
+                  "value": "foo",
+                },
+                Name {
+                  "value": "bar",
+                },
+              ],
+              "kind": "ref",
+            },
+            "value": 0,
+          },
+          Comment {
+            "value": " set foo.bar[0] = 0",
+          },
+          JASSSet {
+            "name": Object {
+              "data": Array [
+                Call {
+                  "name": Name {
+                    "value": "foo",
+                  },
+                },
+                Name {
+                  "value": "bar",
+                },
+              ],
+              "kind": "ref",
+            },
+            "value": 0,
+          },
+        ],
+      },
+    },
+  ],
+}
+`;
+
+exports[`operators 1`] = `
+Program {
+  "body": Array [
+    Module {
+      "blocks": Array [
+        JASSFunction {
+          "access": "global",
+          "name": Name {
+            "value": "PXTODPI",
+          },
+          "operator": true,
+          "returns": "real",
+          "statements": Statements {
+            "body": Array [
+              Return {
+                "data": Array [
+                  BinaryOp {
+                    "left": 0.6,
+                    "operator": "/",
+                    "right": Name {
+                      "value": "ResolutionHeight",
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          "static": true,
+        },
+      ],
+      "name": Name {
+        "value": "Foo",
+      },
+    },
+  ],
+}
+`;
+
+exports[`struct 1`] = `
+Program {
+  "body": Array [
+    Module {
+      "blocks": Array [
+        Variable {
+          "access": "global",
+          "comment": Comment {
+            "value": " hmm",
+          },
+          "name": Name {
+            "value": "myInt",
+          },
+          "static": true,
+          "type": "integer",
+          "value": 0,
+        },
+        Variable {
+          "access": "private",
+          "name": Name {
+            "value": "resolutionChangeTrigg",
+          },
+          "static": true,
+          "type": Name {
+            "value": "trigger",
+          },
+          "value": Call {
+            "name": Name {
+              "value": "CreateTrigger",
+            },
+          },
+        },
+        Variable {
+          "access": "global",
+          "name": Name {
+            "value": "Game",
+          },
+          "readonly": true,
+          "static": true,
+          "type": Name {
+            "value": "framehandle",
+          },
+        },
+        JASSFunction {
+          "access": "global",
+          "name": Name {
+            "value": "baz",
+          },
+          "statements": Statements {
+            "body": Array [
+              Comment {
+                "value": " do something",
+              },
+            ],
+          },
+        },
+      ],
+      "extends": Name {
+        "value": "bar",
+      },
+      "name": Name {
+        "value": "foo",
+      },
+    },
+  ],
+}
+`;
+
+exports[`struct extending array 1`] = `
+Program {
+  "body": Array [
+    Module {
+      "blocks": Array [
+        Variable {
+          "access": "global",
+          "name": Name {
+            "value": "Game",
+          },
+          "type": Name {
+            "value": "framehandle",
+          },
+        },
+      ],
+      "extends": "array",
+      "name": Name {
+        "value": "DefaultFrame",
+      },
+    },
+  ],
+}
+`;

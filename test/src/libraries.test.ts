@@ -122,3 +122,22 @@ it(
         endscope
     `),
 );
+
+it(
+	"modules",
+	parseSnapshot(`
+    module A
+        private module B
+        endmodule
+    endmodule
+`),
+);
+
+it(
+	"keywords",
+	parseSnapshot(`
+        module Foo
+            private keyword B // test
+        endmodule
+    `),
+);

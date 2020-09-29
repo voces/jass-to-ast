@@ -122,8 +122,13 @@ const e = (fn = (data) => data) => {
 				data[data.length - 1]
 			)
 				data[data.length - 2][commentName] = data[data.length - 1];
-
 			return data.slice(0, -1);
+		});
+	fn.log = (...before) =>
+		e((data) => {
+			data = fn(data);
+			console.log(...before, data);
+			return data;
 		});
 
 	return fn;

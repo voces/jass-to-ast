@@ -70,6 +70,21 @@ class Library extends Node {
 			"endComment",
 		];
 	}
+	constructor(data) {
+		super(data);
+		const last = data[data.length - 1];
+		if (last.length === 1) this.libraryType = last[0];
+		else {
+			this.libraryType = last[2];
+			this.access = last[0];
+		}
+	}
+}
+
+class Module extends Node {
+	static get map() {
+		return ["name", "extends", "comment", "blocks", "endComment"];
+	}
 }
 
 class Requirement extends Node {
@@ -214,6 +229,7 @@ export const map = {
 	unary_op: UnaryOp,
 	var: Variable,
 	requirement: Requirement,
+	module: Module,
 };
 
 export {
@@ -250,4 +266,5 @@ export {
 	Type,
 	UnaryOp,
 	Variable,
+	Module,
 };

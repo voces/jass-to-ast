@@ -15,6 +15,7 @@ Program {
       "endComment": Comment {
         "value": " baz",
       },
+      "libraryType": "library",
       "name": Name {
         "value": "A",
       },
@@ -67,6 +68,7 @@ Program {
           },
         },
       ],
+      "libraryType": "library",
       "name": Name {
         "value": "B",
       },
@@ -104,6 +106,7 @@ Program {
           "returns": "integer",
         },
       ],
+      "libraryType": "library",
       "name": Name {
         "value": "A",
       },
@@ -153,6 +156,7 @@ Program {
           },
         },
       ],
+      "libraryType": "library",
       "name": Name {
         "value": "A",
       },
@@ -184,6 +188,7 @@ Program {
         },
         EmptyLine {},
       ],
+      "libraryType": "library",
       "name": Name {
         "value": "A",
       },
@@ -208,6 +213,54 @@ Program {
       "initializer": Name {
         "value": "Init",
       },
+      "libraryType": "library",
+      "name": Name {
+        "value": "A",
+      },
+    },
+  ],
+}
+`;
+
+exports[`keywords 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        Object {
+          "data": Name {
+            "comment": Comment {
+              "value": " test",
+            },
+            "value": "B",
+          },
+          "kind": "keyword",
+        },
+      ],
+      "libraryType": "module",
+      "name": Name {
+        "value": "Foo",
+      },
+    },
+  ],
+}
+`;
+
+exports[`modules 1`] = `
+Program {
+  "body": Array [
+    Library {
+      "blocks": Array [
+        Library {
+          "access": "private",
+          "blocks": Array [],
+          "libraryType": "module",
+          "name": Name {
+            "value": "B",
+          },
+        },
+      ],
+      "libraryType": "module",
       "name": Name {
         "value": "A",
       },
@@ -221,6 +274,7 @@ Program {
   "body": Array [
     Library {
       "blocks": Array [],
+      "libraryType": "library",
       "name": Name {
         "value": "A",
       },
@@ -234,6 +288,7 @@ Program {
   "body": Array [
     Library {
       "blocks": Array [],
+      "libraryType": "library",
       "name": Name {
         "value": "B",
       },
@@ -255,6 +310,7 @@ Program {
   "body": Array [
     Library {
       "blocks": Array [],
+      "libraryType": "library",
       "name": Name {
         "value": "E",
       },
@@ -294,6 +350,7 @@ Program {
   "body": Array [
     Library {
       "blocks": Array [],
+      "libraryType": "library",
       "name": Name {
         "value": "C",
       },
@@ -329,6 +386,7 @@ Program {
           "returns": "integer",
         },
       ],
+      "libraryType": "scope",
       "name": Name {
         "value": "A",
       },

@@ -31,5 +31,13 @@ export const trim = (str: string): string => {
 	return lines;
 };
 
-export const parseSnapshot = (jass: string): (() => void) => (): void =>
-	expect(parser(trim(jass))).toMatchSnapshot();
+export const parseSnapshot = (jass: string): (() => void) => (): void => {
+	try {
+		expect(parser(trim(jass))).toMatchSnapshot();
+	} catch (err) {
+		// eslint-disable-next-line no-console
+		// err.results.forEach((v) => console.log(JSON.stringify(v, null, 2)));
+		console.error(err);
+		expect(err.results[0]).toEqual(err.results[1]);
+	}
+};

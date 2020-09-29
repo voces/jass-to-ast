@@ -14,16 +14,16 @@ _program_block             -> _ globals_block
                             | _ function_block
                             | _ type_declr
                             | _ library_block
+                            | _ struct_block
                             | _ staticif
+                            | _ keyword
 
 globals_block              -> "globals" newline globals_block_statements:? _ "endglobals" newline           {%e().flat().reorder(1, 2, 5).kind('globals')%}
 
 globals_block_statements   -> _globals_block_statement:+                                                    {%e().flat().kind('statements')%}
 
 _globals_block_statement   -> emptyline
-                            | _ var_declr newline                                                           {%e().flat().reorder(1, 2).lastAsComment().first().assign({access: 'global'})%}
-                            | _ "private" __ var_declr newline                                              {%e().flat().reorder(3, 4).lastAsComment().first().assign({access: 'private'})%}
-                            | _ "public" __ var_declr newline                                               {%e().flat().reorder(3, 4).lastAsComment().first().assign({access: 'public'})%}
+                            | _ var_declr newline                                                           {%e().flat().reorder(1, 2).lastAsComment().first()%}
 
 native_func                -> "native" __ func_declr newline                                                {%e().flat().reorder(2, 3, 4, 5).kind('native').commentable()%}
                             | "constant native" __ func_declr newline                                       {%e().flat().reorder(2, 3, 4, 5).kind('native').commentable().assign({constant: true})%}
@@ -35,19 +35,38 @@ param_list                 -> param (_ "," _ param):*                           
 
 func_return                -> type
                             | "nothing"                                                                     {%nil%}
-                 
-function_block             -> "function" _ func_declr newline statements:? _ "endfunction" newline          {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'global'})%}
-                            | "constant function" _ func_declr newline statements:? _ "endfunction" newline {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({constant: true})%}
-                            | "private function" _ func_declr newline statements:? _ "endfunction" newline  {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'private'})%}
-                            | "public function" _ func_declr newline statements:? _ "endfunction" newline   {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment').assign({access: 'public'})%}
+
+function_block             -> _function_block_access
+
+_function_block_access     -> _function_block_static                                                        {%e().first().assign({access: 'global'})%}
+                            | "private" __ _function_block_static                                           {%e().index(2).assign({access: 'private'})%}
+                            | "public" __ _function_block_static                                            {%e().index(2).assign({access: 'public'})%}
+
+_function_block_static     -> _function_block_constant                                                      {%e().first()%}
+                            | "static" __ _function_block_constant                                          {%e().index(2).assign({static: true})%}
+
+_function_block_constant   -> _function_block                                                               {%e().first()%}
+                            | "constant" __ _function_block                                                 {%e().index(2).assign({constant: true})%}
+
+_function_block            -> function_open __ func_declr newline statements:? _ function_close newline     {%e().flat().reorder(2, 3, 4, 5, 6, 9).kind('function').commentable('endComment')%}
+                            | function_open __ "operator" __ func_declr newline statements:? _ function_close newline {%e().flat().reorder(4, 5, 6, 7, 8, 11).kind('function').commentable('endComment').assign({operator: true})%}
+
+function_open              -> "function"
+                            | "method"
+
+function_close             -> "endfunction"
+                            | "endmethod"
 
 type_declr                 -> "type" __ type __ "extends" __ type newline                                   {%e().flat().reorder(2, 6, 7).kind('type').commentable()%}
 
-library_block              -> _library_start __ name _library_initializer:? _library_requires:? newline program_blocks:* _ _library_end newline {%e().reorder(2, 3, 4, 5, 6, 9).kind("library")%}
+library_block              -> _library_start __ name _library_initializer:? _library_requires:? newline program_blocks:* _ _library_end newline {%e().reorder(2, 3, 4, 5, 6, 9, 0).kind("library")%}
 
-_library_start             -> "library" | "scope"
+_library_start             -> __library_start                                                               {%e().flat()%}
+                            | "private" __ __library_start                                                  {%e().flat()%}
 
-_library_end               -> "endlibrary" | "endscope"
+__library_start             -> "library" | "scope" | "module"
+
+_library_end               -> "endlibrary" | "endscope" | "endmodule" | "endstruct"
 
 _library_initializer       -> __ "initializer" __ name                                                      {%e().reorder(3).first()%}
 
@@ -55,17 +74,39 @@ _library_requires          -> __ "requires" __ library_list                     
 
 library_list               -> name (_ "," _ ("optional" __):? name):*                                       {%e().fn(([first, others]) => [e().kind("requirement")([first]), ...others.map(e().reorder(4, 3).kind("requirement"))])%}
 
+struct_block               -> "struct" _ name (__ "extends" __ _struct_extends_name):? newline _struct_statement:* _ "endstruct" newline {%e().reorder(2, 3, 4, 5, 8).pick(1, e().index(3).first(), 1, e().flat(), 1).kind('module').commentable('endComment')%}
+
+_struct_extends_name       -> name
+                            | "array"
+
+_struct_statement          -> program_blocks
+                            | _ var_declr newline                                                           {%e().reorder(1, 2).pick(e().flat().first(), 1).lastAsComment().first()%}
+
 # //----------------------------------------------------------------------
 # // Local Declarations
 # //----------------------------------------------------------------------
 
-var_declr                  -> type __ name (_ "=" _ expr):?                                                 {%e().flat().reorder(0, 2, 6).kind('var')%}
-                            | ("constant" __) type __ name (_ "=" _ expr):?                                 {%e().flat().reorder(2, 4, 8).kind('var').assign({constant: true})%}
+var_declr                  -> _var_declr_access_maybe
+
+_var_declr_access_maybe    -> _var_declr_readonly_maybe                                                     {%e().first().assign({access: "global"})%}
+                            | "public" __ _var_declr_readonly_maybe                                         {%e().flat().index(2).assign({access: "public"})%}
+                            | "private" __ _var_declr_readonly_maybe                                        {%e().flat().index(2).assign({access: "private"})%}
+
+_var_declr_readonly_maybe  -> _var_declr_static_maybe                                                       {%e().first()%}
+                            | "readonly" __ _var_declr_static_maybe                                         {%e().flat().index(2).assign({readonly: true})%}
+
+_var_declr_static_maybe    -> _var_declr_constant_maybe                                                     {%e().first()%}
+                            | "static" __ _var_declr_constant_maybe                                         {%e().flat().index(2).assign({static: true})%}
+
+_var_declr_constant_maybe  -> _var_declr                                                                    {%e().first()%}
+                            | "constant" __ _var_declr                                                      {%e().flat().index(2).assign({constant: true})%}
+
+_var_declr                 -> type __ name (_ "=" _ expr):?                                                 {%e().flat().reorder(0, 2, 6).kind('var')%}
                             | type __ "array" __ name                                                       {%e().flat().reorder(0, 4).kind('var').assign({array: true})%}
 
 param                      -> type __ name                                                                  {%e().flat().reorder(0, 2).kind('param')%}
 
-local                      -> "local" __ var_declr                                                          {%e().flat().index(2).assign({access: 'local'})%}
+local                      -> "local" __ _var_declr                                                         {%e().flat().index(2).assign({access: 'local'})%}
 
 
 # //----------------------------------------------------------------------
@@ -87,10 +128,10 @@ __statement                -> local
                             | return
                             | debug
 
-set                        -> "set" __ name _ "=" _ expr                                                    {%e().flat().reorder(2, 6).kind('set')%}
-                            | "set" __ name _ "[" _ expr _ "]" _ "=" _ expr                                 {%e().flat().reorder(2, 12, 6).kind('set')%}
+set                        -> "set" __ ref _ "=" _ expr                                                    {%e().flat().reorder(2, 6).kind('set')%}
+                            | "set" __ ref _ "[" _ expr _ "]" _ "=" _ expr                                 {%e().flat().reorder(2, 12, 6).kind('set')%}
                  
-call                       -> "call" __ name _ "(" _ (args _):? ")"                                         {%e().flat().reorder(2, 6).kind('call').assign({statement: true})%}
+call                       -> "call" __ ref _ "(" _ (args _):? ")"                                         {%e().flat().reorder(2, 6).kind('call').assign({statement: true})%}
 
 args                       -> expr (_ "," _ expr):*                                                         {%e().flat().filter((_, i) => i%4 === 0).kind('args')%}
 
@@ -112,19 +153,20 @@ return                     -> "return" (_ expr):?                               
 
 debug                      -> "debug" _ __statement                                                         {%e().flat().reorder(2).kind('debug')%}
 
+keyword                    -> "private keyword" __ name newline                                             {%e().lastAsComment().index(2).kind('keyword')%}
+
 # //----------------------------------------------------------------------
 # // Expressions
 # //----------------------------------------------------------------------
 
 expr                       -> logical_op
                  
-_expr                      -> name
+_expr                      -> ref
                             | const
                             | func_call
                             | parens
                             | unary_op
                             | array_ref
-                            | func_ref
 
 left_expr                  -> func_call
                             | parens
@@ -132,6 +174,7 @@ left_expr                  -> func_call
                             | left_unary_op
                             | string_const
                             | fourcc
+                            | ref
 
 right_expr                 -> parens
                             | string_const
@@ -236,6 +279,7 @@ left_right_prod_op         -> right_rod_op _ ("*"|"/") _ left_expr              
                             | left_right_expr
 
 unary_op                   -> _unary_op                                                                     {%e().flat().reorder(0, 2).kind('unary_op')%}
+                            | func_ref
 _unary_op                  -> ("+"|"-") _ _expr
                             | "not" __ _expr
                             | "not" left_expr
@@ -245,14 +289,17 @@ _left_unary_op             -> ("+"|"-") _ left_expr
                             | "not" __ left_expr
                             | "not" left_right_expr
 
-func_call                  -> name "(" _ (args _):? ")"                                                     {%e().flat().reorder(0, 3).kind('call')%}
+func_call                  -> ref "(" _ (args _):? ")"                                                     {%e().flat().reorder(0, 3).kind('call')%}
 
 parens                     -> "(" _ expr _ ")"                                                              {%e().flat().reorder(2).kind('parens')%}
 
-array_ref                  -> name _ "[" _ expr _ "]"                                                       {%e().flat().reorder(0, 4).kind('array_ref')%}
+array_ref                  -> ref _ "[" _ expr _ "]"                                                        {%e().flat().reorder(0, 4).kind('array_ref')%}
 
-func_ref                   -> "function" __ name                                                            {%e().flat().index(2).kind('func_ref')%}
-                
+func_ref                   -> "function" __ left_expr                                                             {%e().flat().index(2).kind('func_ref')%}
+
+ref                        -> name                                                                          
+                            | left_expr "." name                                                                {%e().reorder(0, 2).pick(e().flat().first(), 1).kind("ref")%}
+
 # //----------------------------------------------------------------------
 # // Base RegEx
 # //----------------------------------------------------------------------
