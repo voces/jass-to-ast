@@ -325,12 +325,12 @@ left_right_prod_op         -> right_rod_op _ ("*"|"/") _ left_expr              
 unary_op                   -> _unary_op                                                                     {%e().flat().reorder(0, 2).kind('unary_op')%}
 _unary_op                  -> ("+"|"-") _ _expr
                             | "not" __ _expr
-                            | "not" left_expr
+                            | "not" _ left_expr
 
 left_unary_op              -> _left_unary_op                                                                {%e().flat().reorder(0, 2).kind('unary_op')%}
 _left_unary_op             -> ("+"|"-") _ left_expr
                             | "not" __ left_expr
-                            | "not" left_right_expr
+                            | "not" _ left_right_expr
 
 func_call                  -> name "(" _ (args _):? ")"                                                     {%e().flat().reorder(0, 3).kind('call')%}
 
