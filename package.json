@@ -6,7 +6,8 @@
   "module": "src/parser.js",
   "scripts": {
     "build": "node --experimental-modules --no-warnings src/grammar/build.js",
-    "lint": "eslint src --ext .js,.ts --fix",
+    "lint": "eslint . --ext .js,.ts --fix",
+    "test-lint": "eslint . --ext .js,.ts --max-warnings 0",
     "test": "jest"
   },
   "repository": {

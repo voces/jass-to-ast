@@ -1,30 +1,31 @@
-import { expectParse, trim } from "../util";
-import parser from "../../src/parser";
 import { inspect } from "util";
 
+import parser from "../../src/parser";
+import { expectParse, trim } from "../util";
+
 describe("parser", () => {
-  describe("globals", () => {
-    it("empty globals block", () =>
-      expectParse(
-        `
+	describe("globals", () => {
+		it("empty globals block", () =>
+			expectParse(
+				`
 			globals
 			endglobals
 			`,
-        `
+				`
 			Program [
 				Globals {}
 			]
 		`,
-      ));
+			));
 
-    it("commented", () =>
-      expectParse(
-        `
+		it("commented", () =>
+			expectParse(
+				`
 			globals //foo
 			//bar
 			endglobals //baz
 		`,
-        `
+				`
 			Program [
 				Globals {
 					comment: Comment "foo"
@@ -35,18 +36,18 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("with globals", () =>
-      expectParse(
-        `
+		it("with globals", () =>
+			expectParse(
+				`
 			globals
 				constant force sheep = CreateForce()
 				real salesTax = 1.5
 				real specialTax = salesTax
 			endglobals
 		`,
-        `
+				`
 			Program [
 				Globals {
 					globals: Statements [
@@ -72,16 +73,16 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
-  });
+			));
+	});
 
-  it("natives", () =>
-    expectParse(
-      `
+	it("natives", () =>
+		expectParse(
+			`
 		native FuncName takes argType1 argName1, argType2 argName2 returns returnType //with comments
 		constant native foo takes nothing returns nothing
 	`,
-      `
+			`
 		Program [
 			Native {
 				name: String "FuncName"
@@ -104,19 +105,19 @@ describe("parser", () => {
 			}
 		]
 	`,
-    ));
+		));
 
-  describe("functions", () => {
-    it("comments", () =>
-      expectParse(
-        `
+	describe("functions", () => {
+		it("comments", () =>
+			expectParse(
+				`
 			function funcName takes argType1 argName1, argType2 argName2 returns returnType //function-comment
 
 				//internal-comment
 
 			endfunction //endfunction-comment
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "funcName"
@@ -141,18 +142,18 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("multiple functions", () =>
-      expectParse(
-        `
+		it("multiple functions", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 			endfunction
 
 			function bar takes nothing returns nothing
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -163,12 +164,12 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    describe("locals", () => {
-      it("can define locals", () =>
-        expectParse(
-          `
+		describe("locals", () => {
+			it("can define locals", () =>
+				expectParse(
+					`
 				function foo takes nothing returns nothing
 					local varType1 varName1
 
@@ -189,7 +190,7 @@ describe("parser", () => {
 					local varType12 varName12 = varName11
 				endfunction
 			`,
-          `
+					`
 				Program [
 					JASSFunction {
 						name: String "foo"
@@ -266,18 +267,18 @@ describe("parser", () => {
 					}
 				]
 			`,
-        ));
-    });
+				));
+		});
 
-    describe("calls", () => {
-      it("with lots of parens", () =>
-        expectParse(
-          `
+		describe("calls", () => {
+			it("with lots of parens", () =>
+				expectParse(
+					`
 				function foo takes nothing returns nothing
 					call SaveStr(A,(((B[i]))),(-xG),(oG))
 				endfunction
 			`,
-          `
+					`
 				Program [
 					JASSFunction {
 						name: String "foo"
@@ -302,20 +303,20 @@ describe("parser", () => {
 					}
 				]
 			`,
-        ));
-    });
-  });
+				));
+		});
+	});
 
-  describe("if-then-else", () => {
-    it("empty", () =>
-      expectParse(
-        `
+	describe("if-then-else", () => {
+		it("empty", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 				if true then
 				endif
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -327,18 +328,18 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("simple", () =>
-      expectParse(
-        `
+		it("simple", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
 				endif
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -356,11 +357,11 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("else", () =>
-      expectParse(
-        `
+		it("else", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -369,7 +370,7 @@ describe("parser", () => {
 				endif
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -397,11 +398,11 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("elseif", () =>
-      expectParse(
-        `
+		it("elseif", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -410,7 +411,7 @@ describe("parser", () => {
 				endif
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -439,11 +440,11 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
+			));
 
-    it("elseif with else", () =>
-      expectParse(
-        `
+		it("elseif with else", () =>
+			expectParse(
+				`
 			function foo takes nothing returns nothing
 				if true then
 					set bar = buz
@@ -454,7 +455,7 @@ describe("parser", () => {
 				endif
 			endfunction
 		`,
-        `
+				`
 			Program [
 				JASSFunction {
 					name: String "foo"
@@ -491,18 +492,18 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
-  });
+			));
+	});
 
-  describe("edge cases", () => {
-    it("multiple left expressions", () =>
-      expectParse(
-        `
+	describe("edge cases", () => {
+		it("multiple left expressions", () =>
+			expectParse(
+				`
 			globals
 				boolean test = a==b[c]or d==e[f]or g==h[i]or j
 			endglobals
 		`,
-        `
+				`
 			Program [
 				Globals {
 					globals: Statements [
@@ -548,17 +549,17 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
-  });
+			));
+	});
 
-  describe("types", () => {
-    it("works", () =>
-      expectParse(
-        `
+	describe("types", () => {
+		it("works", () =>
+			expectParse(
+				`
 			type a extends handle
 			  type   c    extends    d   //with comment
 		`,
-        `
+				`
 			Program [
 				Type {
 					base: String "a"
@@ -571,54 +572,54 @@ describe("parser", () => {
 				}
 			]
 		`,
-      ));
-  });
+			));
+	});
 
-  it("chars", () => {
-    expect(
-      parser(
-        trim(`
+	it("chars", () => {
+		expect(
+			parser(
+				trim(`
 			function a takes nothing returns nothing
 				local integer i = 'a'
 			endfunction
 		`),
-      ),
-    ).toMatchSnapshot();
-  });
+			),
+		).toMatchSnapshot();
+	});
 
-  it("debug", () => {
-    expect(
-      parser(
-        trim(`
+	it("debug", () => {
+		expect(
+			parser(
+				trim(`
 			function a takes nothing returns nothing
 				debug local integer i = 'a'
 			endfunction
 		`),
-      ),
-    ).toMatchSnapshot();
-  });
+			),
+		).toMatchSnapshot();
+	});
 
-  describe("comments", () => {
-    it("multiline", () => {
-      expect(
-        inspect(
-          parser(`
+	describe("comments", () => {
+		it("multiline", () => {
+			expect(
+				inspect(
+					parser(`
 				/* multi
 				line
 				comments */
 			`),
-        ),
-      ).toMatchSnapshot();
-    });
+				),
+			).toMatchSnapshot();
+		});
 
-    it("single line", () => {
-      expect(
-        inspect(
-          parser(`
+		it("single line", () => {
+			expect(
+				inspect(
+					parser(`
 				// single line comment
 			`),
-        ),
-      ).toMatchSnapshot();
-    });
-  });
+				),
+			).toMatchSnapshot();
+		});
+	});
 });
