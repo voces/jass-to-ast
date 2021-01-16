@@ -16,7 +16,7 @@ Program [
 `;
 
 exports[`parser comments multiline 1`] = `
-"Program [
+"Program(4) [
   EmptyLine {},
   [String (Comment): ' multi\\\\n\\\\t\\\\t\\\\t\\\\tline\\\\n\\\\t\\\\t\\\\t\\\\tcomments '],
   EmptyLine {},
@@ -25,7 +25,7 @@ exports[`parser comments multiline 1`] = `
 `;
 
 exports[`parser comments single line 1`] = `
-"Program [
+"Program(3) [
   EmptyLine {},
   [String (Comment): ' single line comment'],
   EmptyLine {}
