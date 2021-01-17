@@ -217,15 +217,13 @@ right_prod_op              -> right_prod_op _ ("*"|"/") _ _expr                 
 left_right_prod_op         -> right_rod_op _ ("*"|"/") _ left_expr                                          {%e().flat().reorder(0, 2, 4).kind('binary_op')%}
                             | left_right_expr
 
-unary_op                   -> _unary_op                                                                     {%e().flat().reorder(0, 2).kind('unary_op')%}
-_unary_op                  -> ("+"|"-") _ _expr
-                            | "not" __ _expr
-                            | "not" _ left_expr
+unary_op                   -> ("+"|"-") _ _expr                                                             {%e().flat().reorder(0, 2).kind('unary_op')%}
+                            | "not" __ _expr                                                                {%e().flat().reorder(0, 2).kind('unary_op')%}
+                            | "not" left_expr                                                               {%e().flat().reorder(0, 1).kind('unary_op')%}
 
-left_unary_op              -> _left_unary_op                                                                {%e().flat().reorder(0, 2).kind('unary_op')%}
-_left_unary_op             -> ("+"|"-") _ left_expr
-                            | "not" __ left_expr
-                            | "not" _ left_right_expr
+left_unary_op              -> ("+"|"-") _ left_expr                                                         {%e().flat().reorder(0, 2).kind('unary_op')%}
+                            | "not" __ left_expr                                                            {%e().flat().reorder(0, 2).kind('unary_op')%}
+                            | "not" left_right_expr                                                         {%e().flat().reorder(0, 1).kind('unary_op')%}
 
 func_call                  -> name "(" _ (args _):? ")"                                                     {%e().flat().reorder(0, 3).kind('call')%}
 

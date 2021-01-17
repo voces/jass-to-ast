@@ -32,11 +32,5 @@ export const trim = (str: string): string => {
 	return lines;
 };
 
-export const expectParse = (input: string, expected: string): void => {
-	const ast = parser(trim(input));
-
-	expect(inspect(ast)).toEqual(trim(expected));
-};
-
 export const parseSnapshot = (value: string) => (): void =>
 	expect(inspect(parser(trim(value)))).toMatchSnapshot();
