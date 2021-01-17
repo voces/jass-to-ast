@@ -1,18 +1,13 @@
 /* eslint-disable no-console */
 
-import fs from "fs";
+import fs from "fs/promises";
 
-import compile from "./compile.js";
+import { build } from "./utils.js";
 
 console.log("reading source...");
-fs.readFile("./src/grammar/jass.ne", "utf-8", (err, source) => {
-	if (err) throw err;
 
-	console.log("compiling source...");
-	const grammar = compile(source);
-
+build(true).then(async (grammar) => {
 	console.log("writing grammar...");
-	fs.writeFile("./src/grammar/jass.js", grammar, () => {
-		console.log("done!");
-	});
+	await fs.writeFile("./src/grammar/jass.js", grammar);
+	console.log("done!");
 });
