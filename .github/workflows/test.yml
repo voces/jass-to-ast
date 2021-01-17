@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - '**.tsx?'
+      - '**.jsx?'
+      - '**.snap'
       - 'package.json'
   workflow_dispatch:
 jobs:
