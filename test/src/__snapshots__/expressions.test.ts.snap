@@ -6,18 +6,13 @@ exports[`not without spaces 1`] = `
 		name: String \\"f\\"
 		returns: String \\"boolean\\"
 		statements: Statements [
-			IfThenElse {
-				condition: Parens UnaryOp {
-					operator: String \\"not\\"
-					expr: Parens BinaryOp {
-						left: Name \\"udg_a\\"
-						operator: String \\"==\\"
-						right: Name \\"udg_b\\"
-					}
+			Return UnaryOp {
+				operator: String \\"not\\"
+				expr: Parens BinaryOp {
+					left: Name \\"a\\"
+					operator: String \\"==\\"
+					right: Name \\"b\\"
 				}
-				then: Statements [
-					Return Boolean false
-				]
 			}
 		]
 	}
