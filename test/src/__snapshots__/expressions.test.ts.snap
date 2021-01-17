@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`not without spaces 1`] = `
+"Program [
+	JASSFunction {
+		name: String \\"f\\"
+		returns: String \\"boolean\\"
+		statements: Statements [
+			IfThenElse {
+				condition: Parens UnaryOp {
+					operator: String \\"not\\"
+					expr: Parens BinaryOp {
+						left: Name \\"udg_a\\"
+						operator: String \\"==\\"
+						right: Name \\"udg_b\\"
+					}
+				}
+				then: Statements [
+					Return Boolean false
+				]
+			}
+		]
+	}
+]"
+`;

@@ -1,9 +1,4 @@
-import parser from "../../src/parser";
-import { inspect } from "../../src/util.js";
-import { trim } from "../util";
-
-const parseSnapshot = (value: string) => () =>
-	expect(inspect(parser(trim(value)))).toMatchSnapshot();
+import { parseSnapshot } from "../util";
 
 describe("parser", () => {
 	describe("globals", () => {

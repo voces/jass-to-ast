@@ -37,3 +37,6 @@ export const expectParse = (input: string, expected: string): void => {
 
 	expect(inspect(ast)).toEqual(trim(expected));
 };
+
+export const parseSnapshot = (value: string) => (): void =>
+	expect(inspect(parser(trim(value)))).toMatchSnapshot();
